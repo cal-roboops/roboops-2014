@@ -47,11 +47,47 @@ PIVOT_SPIN = 1
 
 TIMEOUT = 300 #in ms
 
-class commandParser():
-	def __init__(self):
-		return;
+class motorManager():
+	def __init__(self) :
+		self.motor_list = {}
+		self.com_to_mot_map = {}
 
-	def parse_command_to(self, string, motor_man):
+		self.motor_list[FRONT_LEFT_WHEEL] = time.time()
+		self.motor_list[FRONT_RIGHT_WHEEL] = time.time()
+		self.motor_list[BACK_LEFT_WHEEL] = time.time()
+		self.motor_list[BACK_RIGHT_WHEEL] = time.time()
+
+		self.motor_list[ARM_0] = time.time()
+		self.motor_list[ARM_1] = time.time()
+		self.motor_list[ARM_2] = time.time()
+
+		self.motor_list[CAM_X] = time.time()
+		self.motor_list[CAM_Y] = time.time()
+
+		self.com_to_mot_map[FRONT_LEFT_WHEEL_COMMAND] = FRONT_LEFT_WHEEL
+		self.com_to_mot_map[FRONT_RIGHT_WHEEL_COMMAND] = FRONT_RIGHT_WHEEL
+		self.com_to_mot_map[BACK_LEFT_WHEEL_COMMAND] = BACK_LEFT_WHEEL
+		self.com_to_mot_map[BACK_RIGHT_WHEEL_COMMAND] = BACK_RIGHT_WHEEL
+
+		self.com_to_mot_map[ARM_0_COMMAND] = ARM_0
+		self.com_to_mot_map[ARM_1_COMMAND] = ARM_1
+		self.com_to_mot_map[ARM_2_COMMAND] = ARM_2
+
+		self.com_to_mot_map[CAM_X_COMMAND] = CAM_X
+		self.com_to_mot_map[CAM_Y_COMMAND] = CAM_Y
+
+		self.mode = TANK_DRIVE
+		self.queue = deque()
+
+	def update(self) :
+		for motor_name in self.motor_list :
+			motor = self.motor_list[motor_name]
+			if motor[1] > time.time() :
+				motor[0] = 0
+				#set comamnd to 0
+				#send communications to gui + motors
+
+	def parse_commands(self, string) :
 		i, action, value, length = 0, "", "", len(string)
 		while i < length :
 			if string[i] == ':' :
@@ -60,77 +96,40 @@ class commandParser():
 					value += string[i]
 					i += 1
 				value = float(value)
-				motor_man.queue_command(action, value)
+				self.queue.append((action, float(value)))
 				action, value = "", ""
 			else :
 				action = string[i]
 			i += 1
-
-class motorManager():
-	motorList = {}
-	mode = TANK_DRIVE
-	queue = None
-
-	def __init__(self) :
-		self.motorList = {}
-
-		self.motorList[FRONT_LEFT_WHEEL] = time.time()
-		self.motorList[FRONT_RIGHT_WHEEL] = time.time()
-		self.motorList[BACK_LEFT_WHEEL] = time.time()
-		self.motorList[BACK_RIGHT_WHEEL] = time.time()
-
-
-		self.motorList[ARM_0] = time.time()
-		self.motorList[ARM_0] = time.time()
-		self.motorList[ARM_0] = time.time()
-
-
-		self.motorList[CAM_X] = time.time()
-		self.motorList[CAM_Y] = time.time()
-
-		self.mode = TANK_DRIVE
-		self.queue = deque()
-
-	def update(self) :
-		for motor_name in self.motorList :
-			motor = self.motorList[motor_name]
-			if motor[1] > time.time() :
-				motor[0] = 0
-				#set comamnd to 0
-				#send communications to gui + motors
 
 	def resolve_queue(self) :
 		while len(self.queue) :
 			t_action = self.popleft()
 			update_command(t_action[0], t_action[1])
 
-	def queue_command(self, key, value) :
-		self.queue.append((key, value))
-
 	def update_command(self, key, value) :
 		if key == MODE_COMMAND :
 			mode = value
 		elif key == TURN_COMMAND :
-			#do turning shit, I don't know. Something depending on the mode, I guess.
-			print("HEY PYTHON LET ME PUT EMPTY IFS PLEASE YOU FUCKING BASTARD")
+			#do turning, depending on mode
+			print("Turn here")
 		elif key == LEFT_DRIVE_COMMAND :
 			update_port(FRONT_LEFT_WHEEL, value)
 			update_port(BACK_LEFT_WHEEL, value)
 		elif key == RIGHT_DRIVE_COMMAND :
 			update_port(FRONT_RIGHT_WHEEL, value)
 			update_port(BACK_RIGHT_WHEEL, value)
-		elif key in self.motorList :
-			update_port(port, value)
+		elif key in self.com_to_mot_map :
+			update_port(self.com_to_mot_map[key], value)
 		else :
 			print("COMMAND NOT RECOGNIZED YOU DIMWIT")
 
 	def update_port(self,port, value) :
-		self.motorList[port][1] = time.time()
+		self.motor_list[port][1] = time.time()
 
-		#send power to motrs
+		#send power to motors
 		#send communication back to us, updating us on values
 
 def test_me():
-	cP = commandParser()
 	mm = motorManager()
-	cP.parse_command_to("A:100;B:200;C:300;T:400", mm)
+	mm.parse_command("A:100;B:200;C:300;T:400")
