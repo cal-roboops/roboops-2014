@@ -43,7 +43,7 @@ class controller():
 							self.button_funcs[i][3] = 1
 							for f in self.button_funcs[i][1] :
 								f()
-						elif i:
+						elif self.controller.get_button(i):
 							for f in self.button_funcs[i][2] :
 								f()
 
