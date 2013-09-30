@@ -55,7 +55,7 @@ class controller():
 								f()
 
 				for i in range(self.controller.get_numaxes()) :
-					if self.axis_funcs[i][1] < time.time() and (self.controller.get_axis(i) > MIN_DETECTION or self.controller.get_axis(i) < -MIN_DETECTION):
+					if self.axis_funcs[i][1] < time.time() and (abs(self.controller.get_axis(i)) > MIN_DETECTION):
 						for f in self.axis_funcs[i][0] :
 							f(self.controller.get_axis(i))
 						self.axis_funcs[i][1] = time.time() + DELAY
@@ -65,7 +65,6 @@ class controller():
 						for f in self.hat_funcs[i][0] :
 							f(self.controller.get_hat(i))
 						self.hat_funcs[i][1] = time.time() + DELAY
-
 
 	def shut_off(self) :
 		self.is_active = False
