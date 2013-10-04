@@ -2,14 +2,17 @@ import pygame
 import time
 import xbox360
 
-MIN_DETECTION=.1 #to account for misc. numbers in resting state
-DELAY=.2 #to avoid sending excessive info
+MIN_DETECTION=.2 #to account for misc. numbers in resting state
+DELAY=.4 #to avoid sending excessive info
 
-class controller():
+class Controller():
 
 	def __init__(self, id) :
 		pygame.init()
 		pygame.joystick.init()
+		if not pygame.joystick.get_count() :
+			self.is_active = False
+			return
 		self.controller = pygame.joystick.Joystick(id)
 		self.controller.init()
 
@@ -54,25 +57,24 @@ class controller():
 							for f in self.button_funcs[i][1] :
 								f()
 
-				for i in range(self.controller.get_numaxes()) :
-					if self.axis_funcs[i][1] < time.time() and (abs(self.controller.get_axis(i)) > MIN_DETECTION):
-						for f in self.axis_funcs[i][0] :
-							f(self.controller.get_axis(i))
-						self.axis_funcs[i][1] = time.time() + DELAY
-
-				if i in range(self.controller.get_numhats()) :
-					if self.hat_funcs[i][1] < time.time() and self.controller.get_hat(i) != (0,0) :
-						for f in self.hat_funcs[i][0] :
-							f(self.controller.get_hat(i))
-						self.hat_funcs[i][1] = time.time() + DELAY
+			for i in range(self.controller.get_numaxes()) :
+				if self.axis_funcs[i][1] < time.time() and (abs(self.controller.get_axis(i)) > MIN_DETECTION):
+					for f in self.axis_funcs[i][0] :
+						f(self.controller.get_axis(i))
+					self.axis_funcs[i][1] = time.time() + DELAY
+			if i in range(self.controller.get_numhats()) :
+				if self.hat_funcs[i][1] < time.time() and self.controller.get_hat(i) != (0,0) :
+					for f in self.hat_funcs[i][0] :
+						f(self.controller.get_hat(i))
+					self.hat_funcs[i][1] = time.time() + DELAY
 
 	def shut_off(self) :
 		self.is_active = False
 
-class robotController(controller) :
+class RobotController(Controller) :
 
 	def __init__(self, id, queue_out):
-		controller.__init__(self, id)
+		Controller.__init__(self, id)
 
 		self.drive_sensitivity = 100
 
@@ -82,8 +84,9 @@ class robotController(controller) :
 		def drive_right(magnitude) :
 			queue_out.put("R:" + str(int(-self.drive_sensitivity*magnitude)))
 
-		self.bind_axis(xbox360.L_ANALOG_Y, drive_left)
-		self.bind_axis(xbox360.R_ANALOG_Y, drive_right)
+		if(self.is_active) :
+			self.bind_axis(xbox360.L_ANALOG_Y, drive_left)
+			self.bind_axis(xbox360.R_ANALOG_Y, drive_right)
 
 	def set_drive_sensitivity(number) :
 		self.drive_sensitivity = number
