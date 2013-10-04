@@ -8,18 +8,25 @@ def defaultIn():
 	message = input()
 	return message
 
-class Endpoint:
-    def send(function):
+class Endpoint():
+    def __init__(self) :
+        pass
+
+    def send(self, function):
         while True:
-            sendString = function()
-            sc.sendall(sendString)
-    def recieve(function):
+            sendstring = function()
+            if type(sendstring) == type("hi") :
+                sendstring = function().encode(encoding='UTF-8')
+            self.s.sendall(sendString)
+    def receive(self, function):
         while True:
-            message = sc.recv(1024)
+            message = self.s.recv(1024).decode(encoding='UTF-8')
             function(message)
 
 class Server(Endpoint):
-    def __init__(self, host='0.0.0.0', port=1061, fnSend=defaultIn, fnRecieve=defaultOut):
+    def __init__(self, host='0.0.0.0', port=800, fnSend=defaultIn, fnReceive=defaultOut):
+        Endpoint.__init__(self)
+
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.bind((host, port))
@@ -30,15 +37,17 @@ class Server(Endpoint):
         print('We have accepted a connection from'+repr(self.sockname))
         print('Socket connects'+repr(self.sc.getsockname())+'and '+repr(self.sc.getpeername()))
 
-        Thread(target=self.send, function=fnSend).start()
-        Thread(target=self.recieve, function=fnRecieve).start()
+        Thread(None, self.send, None, (fnSend,)).start()
+        Thread(None, self.receive, None, (fnReceive,)).start()
 
 class Client(Endpoint):
-    def __init__(self, host='localhost', port=1061, fnSend=defaultIn, fnRecieve=defaultOut):
+    def __init__(self, host='localhost', port=800, fnSend=defaultIn, fnReceive=defaultOut):
+        Endpoint.__init__(self)
+
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.s.connect((host, port))
         print('Client has been assigned socket name'+repr(self.s.getsockname()))
 
-        Thread(target=self.send, function=fnSend).start()
-        Thread(target=self.recieve, function=fnRecieve).start()
+        Thread(None, self.send, None, (fnSend,)).start()
+        Thread(None, self.receive, None, (fnReceive,)).start()
