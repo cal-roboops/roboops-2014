@@ -1,9 +1,9 @@
-from tkinter import *
+from Tkinter import *
 from random import randint
 from keyManager import *
 
-WIDTH = 1600
-HEIGHT = 900
+WIDTH = 800
+HEIGHT = 450
 
 class outputter(Frame):
     _rows = 0

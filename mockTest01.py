@@ -1,8 +1,8 @@
-from gui import *
-from robot import *
-from _thread import *
-from queue import Queue
-from controller import robotController
+from gui.gui import *
+from robot.command import *
+from thread import *
+from Queue import Queue
+from gamepad.controller import RobotController
 
 class pseudoComLink():
     def __init__(self, queue_in, queue_out) :
@@ -35,11 +35,11 @@ def main():
 
     g = gui(control_side_in, control_side_out)
     r = motorManager(robot_side_in, robot_side_out)
-    z = robotController(0, control_side_out)
+    z = RobotController(0, control_side_out)
     robot_side_com_link = pseudoComLink(robot_side_in, robot_side_out)
     control_side_com_link = pseudoComLink(control_side_in, control_side_out)
 
-    a = start_new_thread(g.gui_loop, ())
+    a = g.gui_loop()
     b = start_new_thread(g.read_inputs, ())
     c = start_new_thread(r.read_inputs, ())
     t = start_new_thread(r.check_timeouts, ())

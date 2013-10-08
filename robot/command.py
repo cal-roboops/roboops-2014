@@ -1,7 +1,7 @@
 import time
 from collections import deque
-from header import *
-from queue import Queue
+from constants import *
+from Queue import Queue
 
 class motorManager():
 	def __init__(self, queue_in, queue_out) :
