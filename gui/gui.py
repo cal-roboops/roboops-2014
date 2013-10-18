@@ -1,24 +1,22 @@
 from Tkinter import *
 from random import randint
-from keyManager import *
+from KeyManager import *
 
-WIDTH = 800
-HEIGHT = 450
+WIDTH = 1600
+HEIGHT = 900
 
-class outputter(Frame):
+class Outputter(Frame):
     _rows = 0
 
     def __init__(self, root):
 
         Frame.__init__(self, root)
-        self.canvas = Canvas(root, borderwidth=0, highlightthickness=0, background="#000000", width = 8*WIDTH//10, height = HEIGHT//4)
-        self.frame = Frame(self.canvas, background="#000000", width = 8*WIDTH//10, height = HEIGHT//4)
+        self.canvas = Canvas(root, borderwidth=0, highlightthickness=0, background="#000000", width = WIDTH//10, height = 2*HEIGHT//4)
+        self.frame = Frame(self.canvas, background="#000000", width = WIDTH//10, height = 2*HEIGHT//4)
         self.scroll = Scrollbar(root, orient="vertical", command=self.canvas.yview)
         self.scroll.config(bg="#000000")
         self.canvas.configure(yscrollcommand=self.scroll.set)
 
-        self.scroll.grid(row=11, column=1, sticky=NS)
-        self.canvas.grid(row=11, column=0)
         self.canvas.create_window((1,1), window=self.frame, anchor="sw", tags="self.frame")
 
         self.frame.bind("<Configure>", self.OnFrameConfigure)
@@ -38,12 +36,7 @@ class outputter(Frame):
         '''Reset the scroll region to encompass the inner frame'''
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-class readouts(LabelFrame):
-
-    _read_labels_outputs = []
-    _read_labels = {}
-    _read_labels_len = 0
-
+class Readouts(LabelFrame):
     def __init__(self, parent, txt = "Undef, yo"):
         self._read_labels_outputs = []
         self._read_labels = {}
@@ -61,13 +54,18 @@ class readouts(LabelFrame):
         Label(self, textvariable = n_readout).grid(row = self._read_labels_len, column = 1, sticky=E)
         self._read_labels[name] = self._read_labels_len
         self._read_labels_len += 1
+        return n_readout
 
     def update_label(self, name, new_readout):
         assert name in self._read_labels, name + " does not exist."
         i = self._read_labels[name]
         self._read_labels_outputs[i].set(new_readout)
 
-class sliders(LabelFrame):
+    def get_value(self, name) :
+        assert name in self._read_labels, name + " does not exist."
+        return self._read_labels[name]
+
+class Sliders(LabelFrame):
     _num_sliders = 0
     _sliders = {}
 
@@ -83,19 +81,20 @@ class sliders(LabelFrame):
         slid.grid(row = self._num_sliders*2 + 1, column = 0, sticky=EW)
         self._sliders[name] = slid
         self._num_sliders += 1
+        return slid
 
     def get_value(self, name):
         assert self._sliders[name], "Does not exist."
         return self._sliders[name].get()
 
-class commandLine(Entry):
+class CommandLine(Entry):
 
     def __init__(self, parent, queue_out, queue_in) :
         Entry.__init__(self, parent)
 
-        self.key_man = keyManager()
-        self.key_man.add_binding('\r', lambda : queue_out.put(self.get()), self.key_man.PRESS)
-        self.key_man.add_binding('\r', lambda : queue_in.put("Outputting: " + self.get()), self.key_man.PRESS)
+        self.key_man = KeyManager()
+        #self.key_man.add_binding('\r', lambda : queue_out.put(self.get()), self.key_man.PRESS)
+        #self.key_man.add_binding('\r', lambda : queue_in.put("Outputting: " + self.get()), self.key_man.PRESS)
         self.key_man.add_binding('\r', lambda : self.delete(0, END), self.key_man.PRESS)
 
         self.__bind_keys()
@@ -110,7 +109,7 @@ class commandLine(Entry):
         self.bind('<Key>', press)
         self.bind('<KeyRelease>', release)
 
-class gui():
+class Gui():
     def __init__(self, queue_in, queue_out) :
         self.root = Tk()
         self.root.geometry(str(WIDTH) + "x" + str(HEIGHT) + "+0+0")
@@ -122,36 +121,88 @@ class gui():
         self.queue_out = queue_out
         self.queue_in = queue_in
 
-        self.video = Label(self.root, text = "Picture")
-        self.video.grid(row=0, column=0, rowspan = 10, columnspan=15,padx=(2*WIDTH//5,2*WIDTH//5), pady=(3*HEIGHT//10, 3*HEIGHT//10))
+        #for motor referencing, for easier updating of values, everything has an id
+        self.readouts = []
 
-        self.output_display = outputter(self.root)
-        self.output_display.set_grid_scroll(row=11,column=1,sticky=NS)
-        self.output_display.set_grid_canvas(row=11,column=0)
+        #for slider referencing
+        self.slider_of_motor = []
 
-        self.input_readout = readouts(self.root, "Inputs of a Varied Nature")
-        self.input_readout.set_grid(row=11,column=16)
+        self.output_display = Outputter(self.root) #set output box
+        self.output_display.set_grid_canvas(row=0,column=0,sticky=N+W+S,rowspan=4)
+        self.output_display.set_grid_scroll(row=0,column=1,sticky=N+W+S,rowspan=4)
 
-        self.robot_readout = readouts(self.root, "Motors and Various Readouts of Importance")
-        self.robot_readout.set_grid(row=0,column=16)
+        self.command_line = CommandLine(self.root, self.queue_out, self.queue_in)
+        self.command_line.set_grid(row=4,column=0,sticky=E+N+W,columnspan=2)
 
-        self.sliders = sliders(self.root, "Sliders of Utmost Functionality")
-        self.sliders.set_grid(row=2,column=16)
+        for i in range(10):
+            self.root.rowconfigure(i, weight=1)
 
-        self.command_line = commandLine(self.root, self.queue_out, self.queue_in)
-        self.command_line.set_grid(row=12,column=0,sticky=EW)
+        for i in range(20):
+            self.root.columnconfigure(i + 2, weight=1)
+
+        self.input_readout = Readouts(self.root, "Controller Input")
+        self.input_readout.set_grid(row=1,column=5,sticky=E+W+N+S)
+
+        self.robot_readout_motors = Readouts(self.root, "Driving Motors")
+        self.robot_readout_motors.set_grid(row=0,column=3,sticky=E+W+N+S)
+
+        self.robot_readout_swerve = Readouts(self.root, "Swerve Motors")
+        self.robot_readout_swerve.set_grid(row=1,column=3,sticky=E+W+N+S)
+
+        self.robot_readout_arm = Readouts(self.root, "Arm Motors")
+        self.robot_readout_arm.set_grid(row=0,column=4,sticky=E+W+N+S)
+
+        self.robot_readout_cam = Readouts(self.root, "Camera Motors")
+        self.robot_readout_cam.set_grid(row=1,column=4,sticky=E+W+N+S)
+
+        self.sliders = Sliders(self.root, "Sensitivity Sliders")
+        self.sliders.set_grid(row=0,column=5)
 
         self.active = True
 
         self.populate()
 
     def populate(self) :
-        for i in range(0, 3):
-            self.sliders.add_slider("Slider" + str(i), -100, 100)
-        for i in range(0, 10):
-            self.input_readout.add_label("???" + str(i), "100")
-        for i in range(0, 13):
-            self.robot_readout.add_label("Motor " + str(i), "100")
+
+        j = 0 #keep track of absolute motor ids, as opposed to local ones, usless right now; will replace with ports later
+
+        #populate motor readouts for wheels
+        for i in range(4):
+            self.readouts[j] = self.robot_readout_motors.add_label("Motor " + str(i), "0")
+            j += 1
+
+        #populate motor readouts for servos
+        for i in range(4):
+            self.readouts[j] = self.robot_readout_swerve.add_label("Motor " + str(i), "0")
+            j += 1
+
+        #populate motor readouts for arm
+        for i in range(3):
+            self.readouts[j] = self.robot_readout_arm.add_label("Motor " + str(i), "0")
+            j += 1
+
+        #populate motor readouts for camera
+        self.readouts[j] = self.robot_readout_cam.add_label("Motor X", "0")
+            j += 1
+        self.readouts[j] = self.robot_readout_cam.add_label("Motor Y", "0")
+            j += 1
+
+        #populate sliders
+        self.slider_of_motor[0] = self.sliders.add_slider("Drive Sensitivity Left", 0, 100)
+        self.slider_of_motor[1] = self.sliders.add_slider("Drive Sensitivity Right", 0, 100)
+
+        #populate user inputs
+        self.input_readout.add_label("A", "0")
+        self.input_readout.add_label("B", "0")
+        self.input_readout.add_label("X", "0")
+        self.input_readout.add_label("Y", "0")
+
+        self.input_readout.add_label("L Analog Y", "0")
+        self.input_readout.add_label("L Analog X", "0")
+        self.input_readout.add_label("R Analog Y", "0")
+        self.input_readout.add_label("R Analog X", "0")
+
+        #output line populate test
         for i in range(100):
             self.output_display.add_line("This is " + str(i))
 
@@ -160,27 +211,14 @@ class gui():
 
     def read_inputs(self) :
         while(self.is_active()) :
-            string = self.queue_in.get()
-            if not "Outputting: " in string :
-                self.parse_commands(string)
-            self.output_display.add_line(string)
+            self.queue_in.get().run_gui(self)
 
-    def parse_commands(self, string) :
-        i, action, value, length = 0, "", "", len(string)
-        while i < length :
-            if string[i] == ':' :
-                i += 1
-                while i < length and string[i] != ';':
-                    value += string[i]
-                    i += 1
-                self.update_readout(action, value)
-                action, value = "", ""
-            else :
-                action = string[i]
-            i += 1
+    def update_readout(self, motor, value):
+        #self.readouts[motor].update_label(local_names[motor], str(value))
+        self.readouts[motor].set(value)
 
-    def update_readout(self, action, value):
-        self.robot_readout.update_label("Motor " + str(action), str(value))
+    def output(self, string):
+        self.output_display.add_line(string)
 
     def is_active(self) :
         return self.active
