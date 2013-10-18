@@ -23,7 +23,7 @@ class Turn(Command):
 if __name__ == "__main__":
     # command is created from the user side
     turn = Turn(10)
-    s = turn.dump() 
+    s = turn.dump()
     
     # s is sent over the network to the robot
     # the robot runs
