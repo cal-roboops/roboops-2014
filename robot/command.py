@@ -59,46 +59,9 @@ class motorManager():
 
 	def read_inputs(self) :
 		while(self.is_active) :
-			self.parse_commands(self.queue_in.get())
+			self.queue_in.get().run_robot(self)
 
-	def parse_commands(self, string) :
-		i, action, value, length = 0, "", "", len(string)
-		while i < length :
-			if string[i] == ':' :
-				i += 1
-				while i < length and string[i] != ';':
-					value += string[i]
-					i += 1
-				self.update_command(str(action), float(value))
-				action, value = "", ""
-			else :
-				action = string[i]
-			i += 1
-
-	def resolve_queue(self) :
-		while len(self.queue) :
-			t_action = self.queue.popleft()
-			self.update_command(t_action[0], t_action[1])
-
-	def update_command(self, key, value) :
-		if key == MODE_COMMAND :
-			self.mode = value
-		elif key == TURN_COMMAND :
-			#do turning, depending on mode
-			self.queue_out.put("Turn here")
-		elif key == LEFT_DRIVE_COMMAND :
-			self.update_port(FRONT_LEFT_WHEEL, value)
-			self.update_port(BACK_LEFT_WHEEL, value)
-		elif key == RIGHT_DRIVE_COMMAND :
-			self.update_port(FRONT_RIGHT_WHEEL, value)
-			self.update_port(BACK_RIGHT_WHEEL, value)
-		elif key in self.motors :
-			self.update_port(self.motors[key], value)
-		else :
-			self.queue_out.put("COMMAND NOT RECOGNIZED YOU DIMWIT")
-			self.is_active = False
-
-	def update_port(self,port, value) :
+	def update_port(self, port, value) :
 		if value :
 			self.motor_timeouts[port] = time.time() + TIMEOUT
 		else :
