@@ -74,22 +74,20 @@ class Controller():
 class RobotController(Controller) :
 
 	def __init__(self, id, queue_out):
+		#queue_out should be gui's queue_in, so gui can process with sliders
 		Controller.__init__(self, id)
 
 		self.drive_sensitivity = 100
 
 		def drive_left(magnitude) :
-			queue_out.put("L:" + str(int(-self.drive_sensitivity*magnitude)))
+			queue_out.put(RawLeft(int(magnitude))
 
 		def drive_right(magnitude) :
-			queue_out.put("R:" + str(int(-self.drive_sensitivity*magnitude)))
+			queue_out.put(RawRight(int(magnitude))
 
 		if(self.is_active) :
 			self.bind_axis(xbox360.L_ANALOG_Y, drive_left)
 			self.bind_axis(xbox360.R_ANALOG_Y, drive_right)
-
-	def set_drive_sensitivity(number) :
-		self.drive_sensitivity = number
 
 def main() :
 	"""
