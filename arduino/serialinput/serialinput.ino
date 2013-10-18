@@ -22,6 +22,10 @@ void loop() {
       digitalWrite(13, LOW);
       digitalWrite(12, HIGH);
       break;
+    case 'a':
+      digitalWrite(13, LOW);
+      digitalWrite(12, LOW);
+      break;
   }
   
   delay(100);
