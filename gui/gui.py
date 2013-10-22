@@ -2,6 +2,8 @@ from Tkinter import *
 from random import randint
 from KeyManager import *
 
+import serialize
+
 WIDTH = 1600
 HEIGHT = 900
 
@@ -211,8 +213,7 @@ class Gui():
 
     def read_inputs(self) :
         while(self.is_active()) :
-            command = self.queue_in.get()
-            command.run_gui(self)
+            serialize.run_gui(self.queue_in.get())
 
     def update_readout(self, motor, value):
         #self.readouts[motor].update_label(local_names[motor], str(value))
