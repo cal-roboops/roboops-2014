@@ -2,6 +2,7 @@ import time
 from collections import deque
 from constants import *
 from Queue import Queue
+from serialize import Serialize
 
 class motorManager():
 	def __init__(self, queue_in, queue_out) :
@@ -29,7 +30,7 @@ class motorManager():
 		self.is_active = True
 
 	def update(self) :
-		self.resolve_queue()
+		self.read_inputs()
 		self.check_timeouts()
 
 	def check_timeouts(self) :
@@ -41,15 +42,15 @@ class motorManager():
 
 	def read_inputs(self) :
 		while(self.is_active) :
-			self.queue_in.get().run_robot(self)
+			Serialize.run_robot(self.queue_in.get(), self)
 
 	def update_port(self, port, value) :
 		if value :
 			self.motor_timeouts[port] = time.time() + TIMEOUT
 		else :
 			self.motor_timeouts[port] = time.time() + 300
-		self.queue_out.put(Motor(port, value).dump())
-		#send power to motors
+		a = Serialize.Motor(port, value).dump()
+		self.queue_out.put(a)
 
 	def shut_off(self) :
 		self.is_active = False

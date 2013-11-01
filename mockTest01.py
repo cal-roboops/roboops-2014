@@ -1,8 +1,11 @@
 from gui.gui import *
+from gui.KeyManager import *
 from robot.command import *
 from thread import *
 from Queue import Queue
 from gamepad.controller import RobotController
+
+from serialize import Serialize
 
 class pseudoComLink():
     def __init__(self, queue_in, queue_out) :
@@ -33,13 +36,13 @@ def main():
     control_side_buffer = Queue()
     robot_side_buffer = Queue()
 
-    g = gui(control_side_in, control_side_out)
+    g = Gui(control_side_in, control_side_out)
     r = motorManager(robot_side_in, robot_side_out)
     z = RobotController(0, control_side_out)
     robot_side_com_link = pseudoComLink(robot_side_in, robot_side_out)
     control_side_com_link = pseudoComLink(control_side_in, control_side_out)
 
-    a = g.gui_loop()
+
     b = start_new_thread(g.read_inputs, ())
     c = start_new_thread(r.read_inputs, ())
     t = start_new_thread(r.check_timeouts, ())
@@ -48,6 +51,7 @@ def main():
     e = start_new_thread(control_side_com_link.transmit_outputs, (robot_side_buffer,))
     f = start_new_thread(robot_side_com_link.read_inputs, (robot_side_buffer,))
     h = start_new_thread(robot_side_com_link.transmit_outputs, (control_side_buffer,))
+    a = g.gui_loop()
 
     while(g.is_active()):
         pass
@@ -57,4 +61,4 @@ def main():
     z.shut_off()
 
 if __name__ == '__main__':
-    main()  
+    main()

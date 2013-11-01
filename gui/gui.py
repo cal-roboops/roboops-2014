@@ -2,7 +2,11 @@ from Tkinter import *
 from random import randint
 from KeyManager import *
 
-import serialize
+from Queue import Queue
+
+from serialize import Serialize
+
+import pickle
 
 WIDTH = 1600
 HEIGHT = 900
@@ -124,10 +128,10 @@ class Gui():
         self.queue_in = queue_in
 
         #for motor referencing, for easier updating of values, everything has an id
-        self.readouts = []
+        self.readouts = {}
 
         #for slider referencing
-        self.slider_of_motor = []
+        self.slider_of_motor = {}
 
         self.output_display = Outputter(self.root) #set output box
         self.output_display.set_grid_canvas(row=0,column=0,sticky=N+W+S,rowspan=4)
@@ -185,9 +189,9 @@ class Gui():
 
         #populate motor readouts for camera
         self.readouts[j] = self.robot_readout_cam.add_label("Motor X", "0")
-            j += 1
+        j += 1
         self.readouts[j] = self.robot_readout_cam.add_label("Motor Y", "0")
-            j += 1
+        j += 1
 
         #populate sliders
         self.slider_of_motor[0] = self.sliders.add_slider("Drive Sensitivity Left", 0, 100)
@@ -213,11 +217,15 @@ class Gui():
 
     def read_inputs(self) :
         while(self.is_active()) :
-            serialize.run_gui(self.queue_in.get())
+            a = self.queue_in.get()
+            try:
+                Serialize.run_gui(a, self)
+            except Exception as ex:
+                print(type(ex).__name__, ex.args)
 
     def update_readout(self, motor, value):
         #self.readouts[motor].update_label(local_names[motor], str(value))
-        self.readouts[motor].set(value)
+        self.readouts[motor].set(str(value))
 
     def output(self, string):
         self.output_display.add_line(string)

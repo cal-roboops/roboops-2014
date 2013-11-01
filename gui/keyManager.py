@@ -1,4 +1,4 @@
-class keyManager():
+class KeyManager():
 	STATE = 0
 	PRESS = 1
 	HOLD = 2
