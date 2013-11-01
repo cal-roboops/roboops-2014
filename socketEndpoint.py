@@ -9,7 +9,9 @@ def defaultIn():
 	return message
 
 class Endpoint():
-    def __init__(self) :
+    def __init__(self, fnSend, fnReceive) :
+        self.fnSend = fnSend
+        self.fnReceive = fnReceive
         pass
 
     def send(self, function):
@@ -24,12 +26,12 @@ class Endpoint():
             function(message)
 
     def start(self):
-        Thread(None, self.send, None, (fnSend,)).start()
-        Thread(None, self.receive, None, (fnReceive,)).start()
+        Thread(None, self.send, None, (self.fnSend,)).start()
+        Thread(None, self.receive, None, (self.fnReceive,)).start()
 
 class Server(Endpoint):
     def __init__(self, host='0.0.0.0', port=800, fnSend=defaultIn, fnReceive=defaultOut):
-        Endpoint.__init__(self)
+        Endpoint.__init__(self, fnSend, fnReceive)
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -43,7 +45,7 @@ class Server(Endpoint):
 
 class Client(Endpoint):
     def __init__(self, host='localhost', port=800, fnSend=defaultIn, fnReceive=defaultOut):
-        Endpoint.__init__(self)
+        Endpoint.__init__(self, fnSend, fnReceive)
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 

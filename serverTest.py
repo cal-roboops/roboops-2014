@@ -18,6 +18,7 @@ def main():
 
     c = start_new_thread(r.read_inputs, ())
     t = start_new_thread(r.check_timeouts, ())
+    f = start_new_thread(robServer.start, ())
 
     r.shut_off()
 
