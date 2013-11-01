@@ -86,6 +86,7 @@ class RobotController(Controller) :
 
 		def drive_right(magnitude) :
 			queue_out.put(Serialize.RawMotor(1, int(magnitude)).dump())
+			pass
 
 		if(self.is_active) :
 			self.bind_axis(xbox360.L_ANALOG_Y, drive_left)
@@ -97,7 +98,7 @@ def main() :
 	Testing code. It works.
 	"""
 	pass
-	"""
+	
 	pygame.init()
 	pygame.joystick.init()
 	if(pygame.joystick.get_count()) :
@@ -128,6 +129,6 @@ def main() :
 			if event.type == pygame.JOYHATMOTION:
 				print([joy.get_hat(i) for i in range(0, joy.get_numhats())])
 	print("exited")
-	pygame.quit"""
+	pygame.quit
 if __name__ == "__main__" :
 	main()

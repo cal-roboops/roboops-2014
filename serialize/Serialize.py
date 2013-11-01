@@ -5,7 +5,10 @@ import pickle
 from Queue import Queue
 
 def run_robot(pickled, robot):
-    pickle.loads(pickled).run_robot(robot)
+    try:
+        pickle.loads(pickled).run_robot(robot)
+    except Exception as ex:
+        print(ex)
 
 def run_gui(pickled, gui):
     pickle.loads(pickled).run_gui(gui)
@@ -61,8 +64,10 @@ class RawMotor(Command):
         assert False, "Robot should not be running this"
 
     def run_gui(self, gui):
+        print("outputting to gui, raw: " + str(self.number) + " at " + str(self.speed))
         if gui:
             gui.queue_out.put(Motor(self.number, self.speed*gui.slider_of_motor[self.number].get()))
+            gui.output("Controller reading: " + str(self.number) + "for " + str(self.speed))
 
         
 if __name__ == "__main__":
