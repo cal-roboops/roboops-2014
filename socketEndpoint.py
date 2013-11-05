@@ -19,10 +19,10 @@ class Endpoint():
             sendstring = function()
             if type(sendstring) == type("hi") :
                 sendstring = function().encode(encoding='UTF-8')
-            self.s.sendall(sendString)
+            self.s.sendall(sendstring)
     def receive(self, function):
         while True:
-            message = self.s.recv(1024).decode(encoding='UTF-8')
+            message = self.sc.recv(1024).decode(encoding='UTF-8')
             function(message)
 
     def start(self):
