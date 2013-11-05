@@ -12,14 +12,15 @@ def main():
     robot_side_out = Queue()
     robot_side_in = Queue()
 
-    robServer = Server('0.0.0.0', 800, robot_side_out.get, robot_side_in.put)
+    robServer = Server('0.0.0.0', 8090, robot_side_out.get, robot_side_in.put)
 
     r = motorManager(robot_side_in, robot_side_out)
 
     c = start_new_thread(r.read_inputs, ())
     t = start_new_thread(r.check_timeouts, ())
     f = start_new_thread(robServer.start, ())
-
+    while(r.is_active):
+    	pass
     r.shut_off()
 
 if __name__ == '__main__':

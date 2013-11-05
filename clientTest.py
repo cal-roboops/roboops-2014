@@ -12,7 +12,7 @@ def main():
     control_side_out = Queue()
     control_side_in = Queue()
 
-    conClient = Client('136.152.36.204', 8080, control_side_out.get, control_side_in.put)
+    conClient = Client('localhost', 8090, control_side_out.get, control_side_in.put)
 
     g = Gui(control_side_in, control_side_out)
     z = RobotController(0, control_side_in)
