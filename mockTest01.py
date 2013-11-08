@@ -1,8 +1,12 @@
 from gui.gui import *
+from gui.KeyManager import *
 from robot.command import *
 from thread import *
 from Queue import Queue
 from gamepad.controller import RobotController
+from socketEndpoint import Server, Client
+
+from serialize import Serialize
 
 class pseudoComLink():
     def __init__(self, queue_in, queue_out) :
@@ -30,31 +34,32 @@ def main():
     robot_side_out = Queue()
     robot_side_in = Queue()
 
-    control_side_buffer = Queue()
-    robot_side_buffer = Queue()
+    robServer = Server('0.0.0.0', 800, robot_side_out.get, robot_side_in.put)
+    conClient = Client('localhost', 800, control_side_out.get, control_side_in.put)
 
-    g = gui(control_side_in, control_side_out)
+    g = Gui(control_side_in, control_side_out)
     r = motorManager(robot_side_in, robot_side_out)
-    z = RobotController(0, control_side_out)
+    z = RobotController(0, control_side_in)
     robot_side_com_link = pseudoComLink(robot_side_in, robot_side_out)
     control_side_com_link = pseudoComLink(control_side_in, control_side_out)
 
-    a = g.gui_loop()
+
     b = start_new_thread(g.read_inputs, ())
     c = start_new_thread(r.read_inputs, ())
     t = start_new_thread(r.check_timeouts, ())
     j = start_new_thread(z.update_loop, ())
     d = start_new_thread(control_side_com_link.read_inputs, (control_side_buffer,))
-    e = start_new_thread(control_side_com_link.transmit_outputs, (robot_side_buffer,))
-    f = start_new_thread(robot_side_com_link.read_inputs, (robot_side_buffer,))
+    #e = start_new_thread(control_side_com_link.transmit_outputs, (robot_side_buffer,))
+    e = start_new_thread(robServer.start, ())
+    f = start_new_thread(conClient.start, ())
+    #f = start_new_thread(robot_side_com_link.read_inputs, (robot_side_buffer,))
     h = start_new_thread(robot_side_com_link.transmit_outputs, (control_side_buffer,))
+    a = g.gui_loop()
 
-    while(g.is_active()):
-        pass
     control_side_com_link.shut_off()
     robot_side_com_link.shut_off()
     r.shut_off()
     z.shut_off()
 
 if __name__ == '__main__':
-    main()  
+    main()

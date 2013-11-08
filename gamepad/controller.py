@@ -2,6 +2,8 @@ import pygame
 import time
 import xbox360
 
+from serialize import Serialize
+
 MIN_DETECTION=.2 #to account for misc. numbers in resting state
 DELAY=.4 #to avoid sending excessive info
 
@@ -74,27 +76,29 @@ class Controller():
 class RobotController(Controller) :
 
 	def __init__(self, id, queue_out):
+		#queue_out should be gui's queue_in, so gui can process with sliders
 		Controller.__init__(self, id)
 
-		self.drive_sensitivity = 100
-
 		def drive_left(magnitude) :
-			queue_out.put("L:" + str(int(-self.drive_sensitivity*magnitude)))
+			queue_out.put(Serialize.RawMotor(0, int(magnitude)).dump())
+			#a = serialize.Motor(0, magnitude).dump()
+			pass
 
 		def drive_right(magnitude) :
-			queue_out.put("R:" + str(int(-self.drive_sensitivity*magnitude)))
+			queue_out.put(Serialize.RawMotor(1, int(magnitude)).dump())
+			pass
 
 		if(self.is_active) :
 			self.bind_axis(xbox360.L_ANALOG_Y, drive_left)
 			self.bind_axis(xbox360.R_ANALOG_Y, drive_right)
-
-	def set_drive_sensitivity(number) :
-		self.drive_sensitivity = number
+			pass
 
 def main() :
 	"""
 	Testing code. It works.
 	"""
+	pass
+	
 	pygame.init()
 	pygame.joystick.init()
 	if(pygame.joystick.get_count()) :
@@ -125,7 +129,6 @@ def main() :
 			if event.type == pygame.JOYHATMOTION:
 				print([joy.get_hat(i) for i in range(0, joy.get_numhats())])
 	print("exited")
-	pygame.quit()
-
+	pygame.quit
 if __name__ == "__main__" :
 	main()

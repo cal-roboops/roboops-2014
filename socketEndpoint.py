@@ -9,7 +9,9 @@ def defaultIn():
 	return message
 
 class Endpoint():
-    def __init__(self) :
+    def __init__(self, fnSend, fnReceive) :
+        self.fnSend = fnSend
+        self.fnReceive = fnReceive
         pass
 
     def send(self, function):
@@ -17,15 +19,19 @@ class Endpoint():
             sendstring = function()
             if type(sendstring) == type("hi") :
                 sendstring = function().encode(encoding='UTF-8')
-            self.s.sendall(sendString)
+            self.s.sendall(sendstring)
     def receive(self, function):
         while True:
-            message = self.s.recv(1024).decode(encoding='UTF-8')
+            message = self.sc.recv(1024).decode(encoding='UTF-8')
             function(message)
+
+    def start(self):
+        Thread(None, self.send, None, (self.fnSend,)).start()
+        Thread(None, self.receive, None, (self.fnReceive,)).start()
 
 class Server(Endpoint):
     def __init__(self, host='0.0.0.0', port=800, fnSend=defaultIn, fnReceive=defaultOut):
-        Endpoint.__init__(self)
+        Endpoint.__init__(self, fnSend, fnReceive)
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -37,17 +43,11 @@ class Server(Endpoint):
         print('We have accepted a connection from'+repr(self.sockname))
         print('Socket connects'+repr(self.sc.getsockname())+'and '+repr(self.sc.getpeername()))
 
-        Thread(None, self.send, None, (fnSend,)).start()
-        Thread(None, self.receive, None, (fnReceive,)).start()
-
 class Client(Endpoint):
     def __init__(self, host='localhost', port=800, fnSend=defaultIn, fnReceive=defaultOut):
-        Endpoint.__init__(self)
+        Endpoint.__init__(self, fnSend, fnReceive)
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.s.connect((host, port))
         print('Client has been assigned socket name'+repr(self.s.getsockname()))
-
-        Thread(None, self.send, None, (fnSend,)).start()
-        Thread(None, self.receive, None, (fnReceive,)).start()
