@@ -1,6 +1,9 @@
 // sending 'w' through serial port turns default LED on
 // sending 's' through serial port turns default LED off
 
+String UID = "ARM_CONTROLLER";
+int uid_size = sizeof(UID);
+
 // arm controller variables
 int armLowPin = 12;
 int armHighPin = 13;
@@ -25,7 +28,7 @@ int baseDirection = 0;
 
 int lastSent = 0;
 int threshold = 512;
-  
+
 void setup() {  
   Serial.begin(9600);
   pinMode(13, OUTPUT);
@@ -40,6 +43,27 @@ void setup() {
   digitalWrite(10, LOW);
   digitalWrite(9, LOW);
   digitalWrite(8, LOW);
+  
+  char buffer[uid_size];
+  while (true) {
+    Serial.println(UID);
+    delay(500);
+    Serial.readBytes(buffer, 14);
+    
+    boolean isUID = true;
+    for (int i = 0; i < uid_size; i++) {
+      if (buffer[i] != UID[i]) {
+        isUID = false;
+        break;
+      }
+    }
+    
+    if (isUID) {
+      break;
+    }
+  }
+  
+  Serial.println("Connected!");
 }
 
 int temp = 0;
