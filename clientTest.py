@@ -12,17 +12,16 @@ def main():
     control_side_out = Queue()
     control_side_in = Queue()
 
-    conClient = Client('localhost', 8090, control_side_out.get, control_side_in.put)
+    conClient = Client('localhost', 8050, control_side_out.get, control_side_in.put)
 
     g = Gui(control_side_in, control_side_out)
     z = RobotController(0, control_side_in)
 
     b = start_new_thread(g.read_inputs, ())
     j = start_new_thread(z.update_loop, ())
-    f = start_new_thread(conClient.start, ())
+    conClient.start()
     a = g.gui_loop()
 
-    r.shut_off()
     z.shut_off()
 
 if __name__ == '__main__':

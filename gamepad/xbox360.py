@@ -1,5 +1,9 @@
 #List of constants for 360 controller.
-#
+
+#Types
+BUTTON = 0
+AXIS = 1
+HAT = 2
 
 #Buttons
 A_BUTTON=0

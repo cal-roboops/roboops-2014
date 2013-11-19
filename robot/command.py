@@ -14,6 +14,11 @@ class motorManager():
 		self.motor_timeouts[BACK_LEFT_WHEEL] = time.time()
 		self.motor_timeouts[BACK_RIGHT_WHEEL] = time.time()
 
+		self.motor_timeouts[FRONT_LEFT_SWERVE] = time.time()
+		self.motor_timeouts[FRONT_RIGHT_SWERVE] = time.time()
+		self.motor_timeouts[BACK_LEFT_SWERVE] = time.time()
+		self.motor_timeouts[BACK_RIGHT_SWERVE] = time.time()
+
 		self.motor_timeouts[ARM_0] = time.time()
 		self.motor_timeouts[ARM_1] = time.time()
 		self.motor_timeouts[ARM_2] = time.time()
@@ -37,6 +42,7 @@ class motorManager():
 		while(self.is_active):
 			for motor in self.motor_timeouts :
 				if self.motor_timeouts[motor] < time.time() :
+					#print(str(motor) + "timed out!")
 					self.update_port(motor, 0)
 					#print("Updated motor!")
 
@@ -48,9 +54,10 @@ class motorManager():
 		if value :
 			self.motor_timeouts[port] = time.time() + TIMEOUT
 		else :
-			self.motor_timeouts[port] = time.time() + 300
+			self.motor_timeouts[port] = time.time() + 30
 		a = Serialize.Motor(port, value).dump()
 		self.queue_out.put(a)
+		#print(self.queue_out.qsize());
 
 	def shut_off(self) :
 		self.is_active = False

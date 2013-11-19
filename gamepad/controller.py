@@ -1,6 +1,6 @@
 import pygame
 import time
-import xbox360
+from constants import *
 
 from serialize import Serialize
 
@@ -80,17 +80,16 @@ class RobotController(Controller) :
 		Controller.__init__(self, id)
 
 		def drive_left(magnitude) :
-			queue_out.put(Serialize.RawMotor(0, int(magnitude)).dump())
-			#a = serialize.Motor(0, magnitude).dump()
-			pass
+			queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
+			queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
 
 		def drive_right(magnitude) :
-			queue_out.put(Serialize.RawMotor(1, int(magnitude)).dump())
-			pass
+			queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
+			queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
 
 		if(self.is_active) :
-			self.bind_axis(xbox360.L_ANALOG_Y, drive_left)
-			self.bind_axis(xbox360.R_ANALOG_Y, drive_right)
+			self.bind_axis(L_ANALOG_Y, drive_left)
+			self.bind_axis(R_ANALOG_Y, drive_right)
 			pass
 
 def main() :
