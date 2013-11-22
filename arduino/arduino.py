@@ -19,15 +19,15 @@ class Arduino:
 				print(e)
 			sleep(0.2)
 
-	def write(self, message, arduino):
+	def write(self, message):
 		self.serial.write(message)
 
-	def read(self, arduino):
+	def read(self):
 		return self.serial.readline().strip()
 
 if __name__ == "__main__":
 	interface = Arduino("ARM_CONTROLLER")
 	while True:
-		interface.write("HI", "ARM_CONTROLLER")
-		print("arduino says", interface.read("ARM_CONTROLLER"))
+		interface.write("HI")
+		print("arduino says", interface.read())
 		sleep(1)
