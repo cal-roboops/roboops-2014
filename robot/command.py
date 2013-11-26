@@ -96,6 +96,7 @@ class motorManager():
 		self.queue_out.put(Serialize.Motor(port, value).dump())
 		if(port == ARM_0 or port == ARM_1 or port == ARM_2):
 			self.motors[port].write(self.translations[port](value))
+			print(self.motors[port].read())
 
 	def shut_off(self) :
 		self.is_active = False
