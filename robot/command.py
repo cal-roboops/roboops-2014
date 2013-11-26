@@ -3,11 +3,13 @@ from collections import deque
 from constants import *
 from Queue import Queue
 from serialize import Serialize
+import arduino.arduino as arduino
 
 class motorManager():
 	def __init__(self, queue_in, queue_out) :
 		self.motor_timeouts = {}
 		self.motors = {}
+		self.translations = {}
 
 		self.motor_timeouts[FRONT_LEFT_WHEEL] = time.time()
 		self.motor_timeouts[FRONT_RIGHT_WHEEL] = time.time()
@@ -29,6 +31,44 @@ class motorManager():
 		self.mode = TANK_DRIVE
 		self.queue = deque()
 
+		armArduino = arduino.Arduino("ARM_CONTROLLER")
+		driveArduino = arduino.Arduino("id_drive")
+
+		self.motors[ARM_0] = armArduino
+		self.motors[ARM_1] = armArduino
+		self.motors[ARM_2] = armArduino
+
+		self.motors[FRONT_LEFT_WHEEL] = driveArduino
+		self.motors[BACK_LEFT_WHEEL] = driveArduino
+		self.motors[FRONT_RIGHT_WHEEL] = driveArduino
+		self.motors[BACK_RIGHT_WHEEL] = driveArduino
+
+		self.motors[FRONT_LEFT_SWERVE] = driveArduino
+		self.motors[BACK_LEFT_SWERVE] = driveArduino
+		self.motors[FRONT_RIGHT_SWERVE] = driveArduino
+		self.motors[BACK_RIGHT_SWERVE] = driveArduino
+
+		self.motors[CAM_X] = driveArduino
+		self.motors[CAM_Y] = driveArduino
+
+		self.translations[ARM_0] = lambda x : arduino.ARM_CW if x > 0 else (arduino.ARM_CCW if x < 0 else arduino.ARM_STOP)
+		self.translations[ARM_1] = lambda x : arduino.CLAW_OPEN if x > 0 else (arduino.CLAW_CLOSE if x < 0 else arduino.CLAW_STOP)
+		self.translations[ARM_2] = lambda x : arduino.BASE_CW if x > 0 else (arduino.BASE_CCW if x < 0 else arduino.BASE_STOP)
+
+		self.translations[FRONT_LEFT_WHEEL] = lambda x : x
+		self.translations[BACK_LEFT_WHEEL] = lambda x : x
+		self.translations[FRONT_RIGHT_WHEEL] = lambda x : x
+		self.translations[BACK_RIGHT_WHEEL] = lambda x : x
+
+		self.translations[FRONT_LEFT_SWERVE] = lambda x : x
+		self.translations[BACK_LEFT_SWERVE] = lambda x : x
+		self.translations[FRONT_RIGHT_SWERVE] = lambda x : x
+		self.translations[BACK_RIGHT_SWERVE] = lambda x : x
+
+		self.translations[CAM_X] = lambda x : x
+		self.translations[CAM_Y] = lambda x : x
+
+
 		self.queue_in = queue_in
 		self.queue_out = queue_out
 
@@ -42,9 +82,7 @@ class motorManager():
 		while(self.is_active):
 			for motor in self.motor_timeouts :
 				if self.motor_timeouts[motor] < time.time() :
-					#print(str(motor) + "timed out!")
 					self.update_port(motor, 0)
-					#print("Updated motor!")
 
 	def read_inputs(self) :
 		while(self.is_active) :
@@ -55,9 +93,8 @@ class motorManager():
 			self.motor_timeouts[port] = time.time() + TIMEOUT
 		else :
 			self.motor_timeouts[port] = time.time() + 30
-		a = Serialize.Motor(port, value).dump()
-		self.queue_out.put(a)
-		#print(self.queue_out.qsize());
+		self.queue_out.put(Serialize.Motor(port, value).dump())
+		self.motors[port].write(self.translations[port](value))
 
 	def shut_off(self) :
 		self.is_active = False

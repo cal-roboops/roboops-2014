@@ -220,8 +220,8 @@ class Gui():
         self.readouts[CAM_Y] = self.robot_readout_cam.add_label("Cam Y", "0")
 
         #populate sliders
-        self.slider_of_motor[LEFT_SENSITIVITY] = self.sliders.add_slider("Drive Sensitivity Left", 0, 100)
-        self.slider_of_motor[RIGHT_SENSITIVITY] = self.sliders.add_slider("Drive Sensitivity Right", 0, 100)
+        self.slider_of_motor[LEFT_SENSITIVITY] = self.sliders.add_slider("Left Sensitivity", 0, 100)
+        self.slider_of_motor[RIGHT_SENSITIVITY] = self.sliders.add_slider("Right Sensitivity", 0, 100)
 
         #populate user inputs
         self.controller_readouts[BUTTON][A_BUTTON] = self.input_readout.add_label("A", "0")

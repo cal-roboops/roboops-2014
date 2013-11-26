@@ -46,12 +46,10 @@ class Motor(Command):
         self.speed = speed
 
     def run_robot(self, robot):
-        #print("Setting " + str(self.number) + " to " + str(self.speed))
         robot.update_port(self.number, self.speed)
         robot.queue_out.put(self.dump())
         
     def run_gui(self, gui):
-        #print("outputting to gui: " + str(self.number) + " at " + str(self.speed))
         if gui:
             gui.output("Motor " + str(self.number) + " set to " + "{0:.2f}".format(self.speed))
             gui.update_readout(self.number, self.speed)
@@ -74,7 +72,6 @@ class RawMotor(Command):
             gui.update_controller(self.type, self.button, self.speed)
             gui.queue_out.put(Motor(self.number, self.speed*gui.slider_of_motor[self.slider].get()).dump())
             gui.output("Controller reading: " + str(self.number) + " for " + "{0:.2f}".format(self.speed))
-
         
 if __name__ == "__main__":
     # command is created from the user side

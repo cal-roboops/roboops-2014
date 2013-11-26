@@ -87,9 +87,12 @@ class RobotController(Controller) :
 			queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
 			queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
 
+		def drive_arm(magnitude) :
+			queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, ARM_1, magnitude).dump())
+
 		if(self.is_active) :
-			self.bind_axis(L_ANALOG_Y, drive_left)
-			self.bind_axis(R_ANALOG_Y, drive_right)
+			#self.bind_axis(L_ANALOG_Y, drive_left)
+			self.bind_axis(R_ANALOG_Y, drive_arm)
 			pass
 
 def main() :
