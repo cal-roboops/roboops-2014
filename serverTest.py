@@ -12,7 +12,7 @@ def main():
     robot_side_out = Queue()
     robot_side_in = Queue()
 
-    robServer = Server('0.0.0.0', 8050, robot_side_out.get, robot_side_in.put)
+    robServer = Server('136.152.30.44', 8050, robot_side_out.get, robot_side_in.put)
 
     r = motorManager(robot_side_in, robot_side_out)
 
@@ -26,4 +26,4 @@ def main():
     r.shut_off()
 
 if __name__ == '__main__':
-    main()
+    main(

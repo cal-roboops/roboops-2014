@@ -32,7 +32,7 @@ class motorManager():
 		self.queue = deque()
 
 		armArduino = arduino.Arduino("ARM_CONTROLLER")
-		driveArduino = arduino.Arduino("id_drive")
+		#driveArduino = arduino.Arduino("id_drive")
 
 		self.motors[ARM_0] = armArduino
 		self.motors[ARM_1] = armArduino
@@ -94,7 +94,8 @@ class motorManager():
 		else :
 			self.motor_timeouts[port] = time.time() + 30
 		self.queue_out.put(Serialize.Motor(port, value).dump())
-		self.motors[port].write(self.translations[port](value))
+		if(port == ARM_0 or port == ARM_1 or port == ARM_2):
+			self.motors[port].write(self.translations[port](value))
 
 	def shut_off(self) :
 		self.is_active = False
