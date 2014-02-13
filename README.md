@@ -5,7 +5,11 @@ Code repository for UC Berkeley Robo-Ops team.
 
 Message Scheme
 ==============
-Beaglebone->Arduino
-      1        2  3  4  5   6   7  8  9     10
-function(1char);speed(3char);position(3char)\n
 
+Beaglebone->Arduino
+
+function(1char);speed(variable char);position(variable char)\n
+
+example: Move motor 0 to position 1013 at speed 255
+
+0;255;1013\n
