@@ -14,7 +14,7 @@ def main():
     control_side_out = Queue()
     control_side_in = Queue()
 
-    conClient = Client(sys.argv[0], sys.argv[1], control_side_out.get, control_side_in.put)
+    conClient = Client(sys.argv[1], int(sys.argv[2]), control_side_out.get, control_side_in.put)
 
     g = Gui(control_side_in, control_side_out)
     z = RobotController(0, control_side_in)
