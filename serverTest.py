@@ -14,7 +14,9 @@ def main():
     robot_side_out = Queue()
     robot_side_in = Queue()
 
-    robServer = Server(sys.argv[0], sys.argv[1], robot_side_out.get, robot_side_in.put)
+    print(sys.argv)
+
+    robServer = Server(sys.argv[1], int(sys.argv[2]), robot_side_out.get, robot_side_in.put)
 
     r = motorManager(robot_side_in, robot_side_out)
 
