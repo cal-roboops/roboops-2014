@@ -16,15 +16,12 @@ const int MOTOR_ID = 0,
 
 // stores the read string for motor id
 char motorChar[2];
-     motorChar[1] = '\0';
 
 // stores the read string for values
 char valuesChar[4];
-     valuesChar[3] = '\0';
 
 // stores the read line
 char line[9];
-     line[8] = '\0';
 
 /* Read a whole line in serial console, wait if the serial is not available */
 void readLine(char* dist)
@@ -62,6 +59,11 @@ void parseLine(char *line)
 void setup() {
   // initialize both serial ports:
   Serial.begin(9600);
+  
+  
+  motorChar[1] = '\0';
+  valuesChar[3] = '\0';
+  line[8] = '\0';
 }
 
 void loop() {
