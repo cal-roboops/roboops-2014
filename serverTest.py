@@ -24,9 +24,9 @@ def main():
 
     r = motorManager(robot_side_in, robot_side_out, sys.argv[2], sys.argv[3])
 
-    #c = start_new_thread(r.read_inputs, ())
+    c = start_new_thread(r.read_inputs, ())
     #t = start_new_thread(r.check_timeouts, ())
-    c = start_new_thread(r.update, ())
+    #c = start_new_thread(r.update, ())
 
     robServer.start()
     while(r.is_active):
