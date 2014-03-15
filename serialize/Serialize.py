@@ -46,8 +46,9 @@ class Motor(Command):
         self.speed = speed
 
     def run_robot(self, robot):
-        print("Command received! Attempting to send back!")
+        print("Command received! Attempting to write to arduino")
         robot.update_port(self.number, self.speed)
+        print("Command sent to arduino! Trying to send back shit")
         robot.queue_out.put(self.dump())
         
     def run_gui(self, gui):
