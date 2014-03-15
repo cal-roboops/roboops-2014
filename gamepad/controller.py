@@ -109,10 +109,19 @@ class RobotController(Controller) :
 
 		self.clear_funcs()
 
+		self.pre_values = {}
+		self.pre_values[ARM_0] = None
+		self.pre_values[ARM_1] = None
+		self.pre_values[ARM_2] = None
+		self.pre_values[CLAW] = None
+
 		def drive_arm_0(magnitude) :
-			self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_X, ARM_0_SENSITIVITY, ARM_0, magnitude).dump())
+			if magnitude != self.pre_values[ARM_0]
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_X, ARM_0_SENSITIVITY, ARM_0, magnitude).dump())
+				self.pre_values[ARM_0] = magnitude
 
 		def drive_arm_1(magnitude) :
+			if magnitude != self.pre_values[ARM_0]
 			self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, ARM_1_SENSITIVITY, ARM_1, magnitude).dump())
 
 		def drive_arm_2(magnitude) :
@@ -121,16 +130,17 @@ class RobotController(Controller) :
 		def drive_claw(magnitude) :
 			self.queue_out.put(Serialize.RawMotor(AXIS, TRIGGER, CLAW_SENSITIVITY, CLAW, magnitude).dump())
 
-		self.bind_axis(L_ANALOG_X, drive_arm_0)
-		self.bind_axis(L_ANALOG_Y, drive_arm_1)
-		self.bind_axis(R_ANALOG_Y, drive_arm_2)
-		self.bind_axis(TRIGGER, drive_claw)
+		self.bind_axis(L_ANALOG_X, self.generate_motor_func(AXIS, L_ANALOG_X, ARM_0_SENSITIVITY, ARM_0))
+		self.bind_axis(L_ANALOG_Y, self.generate_motor_func(AXIS, L_ANALOG_Y, ARM_1_SENSITIVITY, ARM_1))
+		self.bind_axis(R_ANALOG_Y, self.generate_motor_func(AXIS, R_ANALOG_Y, ARM_2_SENSITIVITY, ARM_2))
+		self.bind_axis(TRIGGER, self.generate_motor_func(AXIS, TRIGGER, CLAW_SENSITIVITY, CLAW))
 
 	def set_drive_mode(self):
 
 		self.clear_funcs()
 
 		def drive_left(magnitude) :
+			if self.pre_values[
 			self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
 			self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
 
@@ -140,6 +150,13 @@ class RobotController(Controller) :
 
 		self.bind_axis(L_ANALOG_Y, drive_left)
 		self.bind_axis(R_ANALOG_Y, drive_right)
+
+	def generate_motor_func(self, type, input_id, sensitivity_id, motor_id) :
+		def func(magnitude) :
+			if magnitude != self.pre_values[motor_id]
+				self.queue_out.put(Serialize.RawMotor(type, input_id, sensitivity_id, motor_id, magnitude).dump())
+				self.pre_values[motor_id] = magnitude
+		return func
 
 def main() :
 	"""
