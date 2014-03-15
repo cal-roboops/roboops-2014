@@ -106,7 +106,7 @@ class Sliders(LabelFrame):
 
     def add_slider(self, name, min, max):
         Label(self, text = name, bg=COLOR_0, fg=COLOR_5).grid(row = self._num_sliders*2 + 1, column = 0, sticky=EW)
-        slid = Scale(self, from_=min, to=max, orient=HORIZONTAL,length=WIDTH//5, borderwidth=0, bg=COLOR_0, fg=COLOR_5, highlightthickness=0,sliderrelief=FLAT,activebackground=COLOR_4,troughcolor=COLOR_6,tickinterval=25)
+        slid = Scale(self, from_=min, to=max, orient=HORIZONTAL,length=WIDTH//5, borderwidth=0, bg=COLOR_0, fg=COLOR_5, highlightthickness=0,sliderrelief=FLAT,activebackground=COLOR_4,troughcolor=COLOR_6,tickinterval=int((max-min)/4))
         slid.grid(row = self._num_sliders*2 + 2, column = 0,sticky=E)
         self._sliders[name] = slid
         self._num_sliders += 1
@@ -228,9 +228,9 @@ class Gui():
         self.slider_of_motor[LEFT_SENSITIVITY] = self.sliders.add_slider("Left Sensitivity", 0, 100)
         self.slider_of_motor[RIGHT_SENSITIVITY] = self.sliders.add_slider("Right Sensitivity", 0, 100)
         self.slider_of_motor[ARM_0_SENSITIVITY] = self.sliders.add_slider("Arm 0 Sensitivity", 0, 100)
-        self.slider_of_motor[ARM_1_SENSITIVITY] = self.sliders.add_slider("Arm 1 Sensitivity", 0, 100)
-        self.slider_of_motor[ARM_2_SENSITIVITY] = self.sliders.add_slider("Arm 2 Sensitivity", 0, 100)
-        self.slider_of_motor[CLAW_SENSITIVITY] = self.sliders.add_slider("Claw Sensitivity", 0, 100)
+        self.slider_of_motor[ARM_1_SENSITIVITY] = self.sliders.add_slider("Arm 1 Sensitivity", 0, 900)
+        self.slider_of_motor[ARM_2_SENSITIVITY] = self.sliders.add_slider("Arm 2 Sensitivity", 0, 600)
+        self.slider_of_motor[CLAW_SENSITIVITY] = self.sliders.add_slider("Claw Sensitivity", 0, 600)
 
         #populate user inputs
         self.controller_readouts[BUTTON][A_BUTTON] = self.input_readout.add_label("A", "0")
