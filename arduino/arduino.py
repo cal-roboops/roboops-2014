@@ -19,6 +19,7 @@ class Arduino:
 
 	def write(self, message):
 		self.serial.write(message)
+		self.serial.flush()
 
 	def read(self):
 		return self.serial.readline().strip()

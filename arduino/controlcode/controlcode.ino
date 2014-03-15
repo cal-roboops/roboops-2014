@@ -33,16 +33,19 @@ char line[10];
 void readLine(char* dist)
 {
   int i = 0;
-  char inByte;
-  do
+  char inByte =0;
+  while(inByte != '!')
   {
     if (Serial.available())
     {
       inByte = Serial.read();
+      Serial.print(inByte);
       dist[i] = inByte;
       i++;
     }
-  } while(inByte != '!');
+  }
+  Serial.println(" ");
+  dist[i]='\0';
 }
 
 /* Parses a line, writes to global variables */
@@ -52,46 +55,40 @@ void parseLine(char *line)
   
   motorChar[0] = line[0];
   motorChar[1] = line[1];
+  
   values[MOTOR_ID] = atoi(motorChar);
   
   for(i = 0; i < 3; i++)
   {
     valuesChar[i] = line[i + 5];
   }
-  
+
   values[SPEED] = atoi(valuesChar)* (line[3] == '1' ? -1 : 1);
 }
 
 void flushBuffer()
 {
   while (Serial.available()) {
-    Serial.println("hey");
     Serial.read();
   }
 }
 
 void arm(int motor, int spd) {
   if (spd<0) {
-    digitalWrite(dirPins[motor], 1);
-    Serial.print("Speed Back:");
-    Serial.println(spd);
+    digitalWrite(7, 1);
     spd = -spd;
   } else {
-    digitalWrite(dirPins[motor], 0);
-    Serial.print("Speed Forward:");
-    Serial.println(spd);
+    digitalWrite(7, 0);
   }
   long a = 255*long(spd)/1000;
-  Serial.println(a);
-  Serial.println(pwmPins[motor]);
-  analogWrite(pwmPins[motor], a);
+  analogWrite(6, a);
 }
 
 void setup() {
   // initialize both serial ports:
-  motorChar[1] = '\0';
+  motorChar[2] = '\0';
   valuesChar[3] = '\0';
-  line[8] = '\0';
+  line[9] = '\0';
   pwmPins[0] = 3;
   pwmPins[1] = 5;
   pwmPins[2] = 6;
@@ -122,14 +119,17 @@ void setup() {
 
 void loop() {
   // read from port 1, send to port 0:
+  Serial.flush();
   readLine(line);
+  delay(100);
+  Serial.flush();
+  delay(100);
   parseLine(line);
   delay(100);
+  
   flushBuffer();
-  Serial.println("Parsed Info:");
-  Serial.println(values[MOTOR_ID]);
-  Serial.println(values[SPEED]);
-  Serial.println("End of line");
+  delay(100);
+
   arm(values[MOTOR_ID],values[SPEED]);
 }
 
