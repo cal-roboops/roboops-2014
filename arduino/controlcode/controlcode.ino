@@ -86,6 +86,8 @@ void arm(int motor, int spd) {
 
 void setup() {
   // initialize both serial ports:
+  Serial.flush();
+
   motorChar[2] = '\0';
   valuesChar[3] = '\0';
   line[9] = '\0';
@@ -120,6 +122,7 @@ void setup() {
 void loop() {
   // read from port 1, send to port 0:
   Serial.flush();
+  delay(100);
   readLine(line);
   delay(100);
   Serial.flush();
