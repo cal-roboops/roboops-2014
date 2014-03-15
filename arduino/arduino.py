@@ -13,15 +13,16 @@ class Arduino:
 		try :
 			self.serial = serial.Serial(port, 9600)
 		except serial.SerialException:
-			pass
+			self.serial = None
 
 	def write(self, message):
 		self.serial.write(message)
-		pass
 
 	def read(self):
 		return self.serial.readline().strip()
-		return "lel"
+
+	def read(self):
+		return self.serial.readline()
 
 if __name__ == "__main__":
 	interface = Arduino(portNames["ARM_CONTROLLER"])
