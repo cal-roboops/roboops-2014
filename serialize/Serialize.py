@@ -50,6 +50,7 @@ class Motor(Command):
         robot.update_port(self.number, self.speed)
         print("Command sent to arduino! Trying to send back shit")
         robot.queue_out.put(self.dump())
+        print("Shit sent back! Success!")
         
     def run_gui(self, gui):
         if gui:
