@@ -86,7 +86,6 @@ class motorManager():
 		if(self.arduino[port].active) :
 			self.arduino[port].write(self.translate(port, value))
 			print(self.arduino[port].read())
-		time.sleep(0.1)
 
 	def translate(self, port, value) :
 		return str(port).zfill(2) + ((";1;" + str(-value).zfill(3)) if value < 0 else (";0;" + str(value).zfill(3))) + "!"
