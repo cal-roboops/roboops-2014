@@ -79,7 +79,7 @@ class motorManager():
 		else :
 			self.motor_timeouts[port] = time.time() + 30
 		self.queue_out.put(Serialize.Motor(port, value).dump())
-		if(self.arduino) :
+		if(self.arduino[port]) :
 			self.arduino[port].write(self.translate(port, value))
 			print(self.arduino[port].read())
 		time.sleep(0.1)
