@@ -10,15 +10,19 @@ from serialize import Serialize
 
 import sys
 
+"""
+    First argument is port
+    Second argument is port of arm controller
+    Third argument is port of drive controller
+"""
+
 def main():
     robot_side_out = Queue()
     robot_side_in = Queue()
 
-    print(sys.argv)
+    robServer = Server('0.0.0.0', int(sys.argv[1]), robot_side_out.get, robot_side_in.put)
 
-    robServer = Server(sys.argv[1], int(sys.argv[2]), robot_side_out.get, robot_side_in.put)
-
-    r = motorManager(robot_side_in, robot_side_out)
+    r = motorManager(robot_side_in, robot_side_out, sys.argv[2], sys.argv[3])
 
     c = start_new_thread(r.read_inputs, ())
     t = start_new_thread(r.check_timeouts, ())
