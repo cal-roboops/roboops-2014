@@ -87,7 +87,7 @@ class motorManager():
 			print(self.arduino[port].read())
 
 	def translate(self, port, value) :
-		return str(port).zfill(2) + ((";1;" + str(-value).zfill(3)) if value < 0 else (";0;" + str(value).zfill(3))) + "!"
+		return str(port).zfill(2) + ((";1;" + str(-int(value)).zfill(3)) if value < 0 else (";0;" + str(int(value)).zfill(3))) + "!"
 
 	def shut_off(self) :
 		self.is_active = False
