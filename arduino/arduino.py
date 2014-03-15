@@ -28,9 +28,7 @@ class Arduino:
 
 if __name__ == "__main__":
 	interface = Arduino(portNames["ARM_CONTROLLER"])
-	while True:
-		x=raw_input("hey: ")
-		interface.write(x)
+	n=0;
+	while n<100:
+		interface.write("00;0;000!")
 		print("arduino says", interface.read())
-
-		sleep(1)

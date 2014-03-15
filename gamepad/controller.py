@@ -116,12 +116,11 @@ class RobotController(Controller) :
 		self.pre_values[CLAW] = None
 
 		def drive_arm_0(magnitude) :
-			if magnitude != self.pre_values[ARM_0]
+			if magnitude != self.pre_values[ARM_0]:
 				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_X, ARM_0_SENSITIVITY, ARM_0, magnitude).dump())
 				self.pre_values[ARM_0] = magnitude
 
 		def drive_arm_1(magnitude) :
-			if magnitude != self.pre_values[ARM_0]
 			self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, ARM_1_SENSITIVITY, ARM_1, magnitude).dump())
 
 		def drive_arm_2(magnitude) :
