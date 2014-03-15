@@ -19,7 +19,6 @@ const int MOTOR_ID = 0,
 
 // stores the read string for motor id
 char motorChar[2];
-<<<<<<< HEAD
 
 
 // stores the read string for values
@@ -29,14 +28,6 @@ char valuesChar[4];
 // stores the read line
 char line[9];
      
-=======
-
-// stores the read string for values
-char valuesChar[4];
-
-// stores the read line
-char line[9];
->>>>>>> 79f7b158bd0b7f4841152b781bb3dbb0a21f92f8
 
 /* Read a whole line in serial console, wait if the serial is not available */
 void readLine(char* dist)
@@ -99,7 +90,6 @@ void setup() {
   
   Serial.begin(9600);
   
-<<<<<<< HEAD
   //speed
   pinMode(2, OUTPUT);
   pinMode(3, OUTPUT);
@@ -110,12 +100,6 @@ void setup() {
   pinMode(31, OUTPUT);
   pinMode(32, OUTPUT);
   pinMode(33, OUTPUT);
-=======
-  
-  motorChar[1] = '\0';
-  valuesChar[3] = '\0';
-  line[8] = '\0';
->>>>>>> 79f7b158bd0b7f4841152b781bb3dbb0a21f92f8
 }
 
 
