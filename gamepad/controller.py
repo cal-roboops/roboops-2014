@@ -139,12 +139,12 @@ class RobotController(Controller) :
 		self.clear_funcs()
 
 		def drive_left(magnitude) :
-			if self.pre_values[
 			self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
 			self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
 
 		def drive_right(magnitude) :
 			self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
+			self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
 
 		self.bind_axis(L_ANALOG_Y, drive_left)
 		self.bind_axis(R_ANALOG_Y, drive_right)
