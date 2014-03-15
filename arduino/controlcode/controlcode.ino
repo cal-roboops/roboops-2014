@@ -64,14 +64,19 @@ void parseLine(char *line)
 
 void arm(int motor, int spd) {
   if (spd<0) {
-    digitalWrite(pwmPins[motor], 1);
+    digitalWrite(dirPins[motor], 1);
+    Serial.print("Speed Back:");
     Serial.println(spd);
     spd = -spd;
   } else {
     digitalWrite(dirPins[motor], 0);
+    Serial.print("Speed Forward:");
     Serial.println(spd);
   }
-  analogWrite(motor+2, 255*(spd/1000));
+  long a = 255*long(spd)/1000;
+  Serial.println(a);
+  Serial.println(pwmPins[motor]);
+  analogWrite(pwmPins[motor], a);
 }
 
 void setup() {
@@ -88,18 +93,22 @@ void setup() {
   dirPins[2] = 7;
   dirPins[3] = 8;
   
+  analogWrite(pwmPins[0], 0);
+  analogWrite(pwmPins[1], 0);
+  analogWrite(pwmPins[2], 0);
+  analogWrite(pwmPins[3], 0);
+  
   Serial.begin(9600);
   
-  //speed
+  
   pinMode(2, OUTPUT);
   pinMode(3, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(5, OUTPUT);
-  //direction
-  pinMode(30, OUTPUT);
-  pinMode(31, OUTPUT);
-  pinMode(32, OUTPUT);
-  pinMode(33, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  
 }
 
 
@@ -107,11 +116,11 @@ void loop() {
   // read from port 1, send to port 0:
   readLine(line);
   parseLine(line);
-  arm(values[MOTOR_ID],values[SPEED]);
   Serial.println("Parsed Info:");
   Serial.println(values[MOTOR_ID]);
   Serial.println(values[SPEED]);
   Serial.println("End of line");
+  arm(values[MOTOR_ID],values[SPEED]);
 }
 
 
