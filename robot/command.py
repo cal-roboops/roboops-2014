@@ -71,7 +71,6 @@ class motorManager():
 			for motor in self.motor_timeouts :
 				if self.motor_timeouts[motor] < time.time() :
 					self.update_port(motor, 0)
-			time.sleep(0.1)
 
 	def read_inputs(self) :
 		while(self.is_active) :
