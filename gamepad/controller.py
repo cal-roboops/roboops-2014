@@ -94,8 +94,6 @@ class Controller():
 						f(self.controller.get_hat(i) if (self.controller.get_hat(i) != (0,0)) else (0, 0))
 					self.hat_funcs[i][Controller.HAT_TIME_DELAY] = time.time() + DELAY
 
-			time.sleep(.05)
-
 	def shut_off(self) :
 		self.is_active = False
 

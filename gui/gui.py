@@ -52,6 +52,10 @@ class Outputter(Frame):
         self.txt.set(self.txt.get() + "\n" + txt);
         self._rows += 1
 
+        if(self._rows > 100) :
+            self._rows = 0
+            self.txt.set("")
+
     def OnFrameConfigure(self, event):
         '''Reset the scroll region to encompass the inner frame'''
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
