@@ -214,6 +214,7 @@ class Gui():
         self.readouts[ARM_0] = self.robot_readout_arm.add_label("Arm 0", "0")
         self.readouts[ARM_1] = self.robot_readout_arm.add_label("Arm 1", "0")
         self.readouts[ARM_2] = self.robot_readout_arm.add_label("Arm 2", "0")
+        self.readouts[CLAW] = self.robot_readout_arm.add_label("Claw", "0")
 
         #populate motor readouts for camera
         self.readouts[CAM_X] = self.robot_readout_cam.add_label("Cam X", "0")
@@ -222,6 +223,10 @@ class Gui():
         #populate sliders
         self.slider_of_motor[LEFT_SENSITIVITY] = self.sliders.add_slider("Left Sensitivity", 0, 100)
         self.slider_of_motor[RIGHT_SENSITIVITY] = self.sliders.add_slider("Right Sensitivity", 0, 100)
+        self.slider_of_motor[ARM_0_SENSITIVITY] = self.sliders.add_slider("Arm 0 Sensitivity", 0, 100)
+        self.slider_of_motor[ARM_1_SENSITIVITY] = self.sliders.add_slider("Arm 1 Sensitivity", 0, 100)
+        self.slider_of_motor[ARM_2_SENSITIVITY] = self.sliders.add_slider("Arm 2 Sensitivity", 0, 100)
+        self.slider_of_motor[CLAW_SENSITIVITY] = self.sliders.add_slider("Claw Sensitivity", 0, 100)
 
         #populate user inputs
         self.controller_readouts[BUTTON][A_BUTTON] = self.input_readout.add_label("A", "0")
@@ -233,6 +238,7 @@ class Gui():
         self.controller_readouts[AXIS][L_ANALOG_X] = self.input_readout.add_label("L Analog X", "0")
         self.controller_readouts[AXIS][R_ANALOG_Y] = self.input_readout.add_label("R Analog Y", "0")
         self.controller_readouts[AXIS][R_ANALOG_X] = self.input_readout.add_label("R Analog X", "0")
+        self.controller_readouts[AXIS][TRIGGER] = self.input_readout.add_label("Trigger", "0")
 
         #output line populate test
         for i in range(100):

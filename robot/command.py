@@ -6,9 +6,9 @@ from serialize import Serialize
 import arduino.arduino as arduino
 
 class motorManager():
-	def __init__(self, queue_in, queue_out) :
+	def __init__(self, queue_in, queue_out, arm_port, drive_port) :
 		self.motor_timeouts = {}
-		self.motors = {}
+		self.arduino = {}
 		self.translations = {}
 
 		self.motor_timeouts[FRONT_LEFT_WHEEL] = time.time()
@@ -24,6 +24,7 @@ class motorManager():
 		self.motor_timeouts[ARM_0] = time.time()
 		self.motor_timeouts[ARM_1] = time.time()
 		self.motor_timeouts[ARM_2] = time.time()
+		self.motor_timeouts[CLAW] = time.time()
 
 		self.motor_timeouts[CAM_X] = time.time()
 		self.motor_timeouts[CAM_Y] = time.time()
@@ -31,43 +32,26 @@ class motorManager():
 		self.mode = TANK_DRIVE
 		self.queue = deque()
 
-		armArduino = arduino.Arduino("ARM_CONTROLLER")
-		#driveArduino = arduino.Arduino("id_drive")
+		armArduino = arduino.Arduino(arm_port)
+		driveArduino = arduino.Arduino(drive_port)
 
-		self.motors[ARM_0] = armArduino
-		self.motors[ARM_1] = armArduino
-		self.motors[ARM_2] = armArduino
+		self.arduino[ARM_0] = armArduino
+		self.arduino[ARM_1] = armArduino
+		self.arduino[ARM_2] = armArduino
+		self.arduino[CLAW] = armArduino
 
-		self.motors[FRONT_LEFT_WHEEL] = driveArduino
-		self.motors[BACK_LEFT_WHEEL] = driveArduino
-		self.motors[FRONT_RIGHT_WHEEL] = driveArduino
-		self.motors[BACK_RIGHT_WHEEL] = driveArduino
+		self.arduino[FRONT_LEFT_WHEEL] = driveArduino
+		self.arduino[BACK_LEFT_WHEEL] = driveArduino
+		self.arduino[FRONT_RIGHT_WHEEL] = driveArduino
+		self.arduino[BACK_RIGHT_WHEEL] = driveArduino
 
-		self.motors[FRONT_LEFT_SWERVE] = driveArduino
-		self.motors[BACK_LEFT_SWERVE] = driveArduino
-		self.motors[FRONT_RIGHT_SWERVE] = driveArduino
-		self.motors[BACK_RIGHT_SWERVE] = driveArduino
+		self.arduino[FRONT_LEFT_SWERVE] = driveArduino
+		self.arduino[BACK_LEFT_SWERVE] = driveArduino
+		self.arduino[FRONT_RIGHT_SWERVE] = driveArduino
+		self.arduino[BACK_RIGHT_SWERVE] = driveArduino
 
-		self.motors[CAM_X] = driveArduino
-		self.motors[CAM_Y] = driveArduino
-
-		self.translations[ARM_0] = lambda x : arduino.ARM_CW if x > 0 else (arduino.ARM_CCW if x < 0 else arduino.ARM_STOP)
-		self.translations[ARM_1] = lambda x : arduino.CLAW_OPEN if x > 0 else (arduino.CLAW_CLOSE if x < 0 else arduino.CLAW_STOP)
-		self.translations[ARM_2] = lambda x : arduino.BASE_CW if x > 0 else (arduino.BASE_CCW if x < 0 else arduino.BASE_STOP)
-
-		self.translations[FRONT_LEFT_WHEEL] = lambda x : x
-		self.translations[BACK_LEFT_WHEEL] = lambda x : x
-		self.translations[FRONT_RIGHT_WHEEL] = lambda x : x
-		self.translations[BACK_RIGHT_WHEEL] = lambda x : x
-
-		self.translations[FRONT_LEFT_SWERVE] = lambda x : x
-		self.translations[BACK_LEFT_SWERVE] = lambda x : x
-		self.translations[FRONT_RIGHT_SWERVE] = lambda x : x
-		self.translations[BACK_RIGHT_SWERVE] = lambda x : x
-
-		self.translations[CAM_X] = lambda x : x
-		self.translations[CAM_Y] = lambda x : x
-
+		self.arduino[CAM_X] = driveArduino
+		self.arduino[CAM_Y] = driveArduino
 
 		self.queue_in = queue_in
 		self.queue_out = queue_out
@@ -95,8 +79,11 @@ class motorManager():
 			self.motor_timeouts[port] = time.time() + 30
 		self.queue_out.put(Serialize.Motor(port, value).dump())
 		if(port == ARM_0 or port == ARM_1 or port == ARM_2):
-			self.motors[port].write(self.translations[port](value))
-			print(self.motors[port].read())
+			self.arduino[port].write(self.translate(port, value))
+			print(self.arduino[port].read())
+
+	def translate(self, port, value) :
+		return str(port).zfill(2) + ((";1;" + str(-value).zfill(3)) if value < 0 else (";0;" + str(value).zfill(3))) + "!"
 
 	def shut_off(self) :
 		self.is_active = False

@@ -15,6 +15,8 @@ ARM_0 = 8
 ARM_1 = 9
 ARM_2 = 10
 
+CLAW = 13
+
 CAM_X = 11
 CAM_Y = 12
 #I don't know how ports work. But it's a dictionary. So shouldn't matter.
@@ -33,6 +35,10 @@ TIMEOUT = .600 #in s
 #####################
 LEFT_SENSITIVITY = 0
 RIGHT_SENSITIVITY = 1
+ARM_0_SENSITIVITY = 3
+ARM_1_SENSITIVITY = 4
+ARM_2_SENSITIVITY = 5
+CLAW_SENSITIVITY = 6
 
 #####################
 #  	 Controllers    #
