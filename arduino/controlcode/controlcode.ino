@@ -18,7 +18,7 @@ const int MOTOR_ID = 0,
           SPEED = 1;
 
 // stores the read string for motor id
-char motorChar[2];
+char motorChar[3];
 
 
 // stores the read string for values
@@ -26,7 +26,7 @@ char valuesChar[4];
      
 
 // stores the read line
-char line[9];
+char line[10];
      
 
 /* Read a whole line in serial console, wait if the serial is not available */
@@ -51,14 +51,15 @@ void parseLine(char *line)
   int i = 0;
   
   motorChar[0] = line[0];
+  motorChar[1] = line[1];
   values[MOTOR_ID] = atoi(motorChar);
   
   for(i = 0; i < 3; i++)
   {
-    valuesChar[i] = line[i + 4];
+    valuesChar[i] = line[i + 5];
   }
   
-  values[SPEED] = atoi(valuesChar)* (line[2] == '1' ? -1 : 1);
+  values[SPEED] = atoi(valuesChar)* (line[3] == '1' ? -1 : 1);
 }
 
 

@@ -59,8 +59,13 @@ class motorManager():
 		self.is_active = True
 
 	def update(self) :
-		self.read_inputs()
-		self.check_timeouts()
+		while(self.is_active):
+			Serialize.run_robot(self.queue_in.get(), self)
+			for motor in self.motor_timeouts :
+				if self.motor_timeouts[motor] < time.time() :
+					self.update_port(motor, 0)
+					time.sleep(0.1)
+			time.sleep(0.1)
 
 	def check_timeouts(self) :
 		while(self.is_active):
