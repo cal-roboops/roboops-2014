@@ -83,7 +83,9 @@ class motorManager():
 			self.motor_timeouts[port] = time.time() + 30
 		self.queue_out.put(Serialize.Motor(port, value).dump())
 		if(self.arduino[port].active) :
+			print("Attempting to write: " + self.translate(port, value) + " to arduino."
 			self.arduino[port].write(self.translate(port, value))
+			print("Wrote to arduino! Reading from arduino: ")
 			print(self.arduino[port].read())
 
 	def translate(self, port, value) :
