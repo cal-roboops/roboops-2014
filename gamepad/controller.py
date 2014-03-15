@@ -22,9 +22,13 @@ class Controller():
 		self.controller = pygame.joystick.Joystick(id)
 		self.controller.init()
 
-		self.button_funcs = [[[],[],[],0] for i in range(self.controller.get_numbuttons())]
-		self.axis_funcs = [[[], 0] for i in range(self.controller.get_numaxes())]
-		self.hat_funcs = [[[], 0] for i in range(self.controller.get_numhats())]
+		self.num_buttons = self.controller.get_numbuttons()
+		self.num_axes = self.controller.get_numaxes()
+		self.num_hats = self.controller.get_numhats()
+
+		self.button_funcs = [[[],[],[],0] for i in range(self.num_buttons)]
+		self.axis_funcs = [[[], 0] for i in range(self.num_axes)]
+		self.hat_funcs = [[[], 0] for i in range(self.num_hats)]
 
 		self.is_active = True
 
@@ -44,23 +48,24 @@ class Controller():
 		self.hat_funcs[hat_id][Controller.AXIS_FUNC].append(func)
 
 	def clear_funcs(self) :
-		for i in range(self.controller.get_numbuttons()):
+		for i in range(self.num_buttons):
 			self.button_funcs[i][Controller.UP] = []
 			self.button_funcs[i][Controller.DOWN] = []
 			self.button_funcs[i][Controller.HOLD] = []
 			self.button_funcs[i][Controller.IS_DOWN] = 0
-		for i in range(self.controller.get_numaxes()):
+		for i in range(self.num_axes):
 			self.axis_funcs[i][Controller.AXIS_FUNC] = []
 			self.axis_funcs[i][Controller.AXIS_TIME_DELAY] = 0
-		for i in range(self.controller.get_numhats()):
+		for i in range(self.num_hats):
 			self.axis_funcs[i][Controller.HAT_FUNC] = []
 			self.axis_funcs[i][Controller.HAT_TIME_DELAY] = 0
 
 	def update_loop(self) :
 		while(self.is_active) :
+
 			for event in pygame.event.get() :        
 				if event.type == pygame.JOYBUTTONDOWN :
-					for i in range(self.controller.get_numbuttons()) :
+					for i in range(self.num_buttons) :
 						if self.controller.get_button(i) and not self.button_funcs[i][Controller.IS_DOWN] :
 							self.button_funcs[i][Controller.IS_DOWN] = 1
 							for f in self.button_funcs[i][Controller.DOWN] :
@@ -76,16 +81,20 @@ class Controller():
 							for f in self.button_funcs[i][Controller.UP] :
 								f()
 
-			for i in range(self.controller.get_numaxes()) :
+
+			for i in range(self.num_axes) :
 				if self.axis_funcs[i][Controller.AXIS_TIME_DELAY] < time.time():
 					for f in self.axis_funcs[i][Controller.AXIS_FUNC] :
 						f(self.controller.get_axis(i) if (abs(self.controller.get_axis(i)) > MIN_DETECTION) else 0)
 					self.axis_funcs[i][Controller.AXIS_TIME_DELAY] = time.time() + DELAY
-			if i in range(self.controller.get_numhats()) :
+
+			if i in range(self.num_hats) :
 				if self.hat_funcs[i][Controller.HAT_TIME_DELAY] < time.time():
 					for f in self.hat_funcs[i][Controller.HAT_FUNC] :
 						f(self.controller.get_hat(i) if (self.controller.get_hat(i) != (0,0)) else (0, 0))
 					self.hat_funcs[i][Controller.HAT_TIME_DELAY] = time.time() + DELAY
+
+			time.sleep(.05)
 
 	def shut_off(self) :
 		self.is_active = False

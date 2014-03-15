@@ -67,6 +67,7 @@ class motorManager():
 			for motor in self.motor_timeouts :
 				if self.motor_timeouts[motor] < time.time() :
 					self.update_port(motor, 0)
+			time.sleep(0.1)
 
 	def read_inputs(self) :
 		while(self.is_active) :
@@ -78,9 +79,10 @@ class motorManager():
 		else :
 			self.motor_timeouts[port] = time.time() + 30
 		self.queue_out.put(Serialize.Motor(port, value).dump())
-		if(port == ARM_0 or port == ARM_1 or port == ARM_2):
-			self.arduino[port].write(self.translate(port, value))
-			print(self.arduino[port].read())
+		self.arduino[port].write(self.translate(port, value))
+		print(self.arduino[port].read())
+
+		time.sleep(0.1)
 
 	def translate(self, port, value) :
 		return str(port).zfill(2) + ((";1;" + str(-value).zfill(3)) if value < 0 else (";0;" + str(value).zfill(3))) + "!"

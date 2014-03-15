@@ -21,7 +21,7 @@ def main():
     z.set_arm_mode()
 
     b = start_new_thread(g.read_inputs, ())
-    j = start_new_thread(z.update_loop, ())
+    z = start_new_thread(z.update_loop, ())
     conClient.start()
     a = g.gui_loop()
 
