@@ -62,6 +62,13 @@ void parseLine(char *line)
   values[SPEED] = atoi(valuesChar)* (line[3] == '1' ? -1 : 1);
 }
 
+void flushBuffer()
+{
+  while (Serial.available()) {
+    Serial.println("hey");
+    Serial.read();
+  }
+}
 
 void arm(int motor, int spd) {
   if (spd<0) {
@@ -117,6 +124,8 @@ void loop() {
   // read from port 1, send to port 0:
   readLine(line);
   parseLine(line);
+  delay(100);
+  flushBuffer();
   Serial.println("Parsed Info:");
   Serial.println(values[MOTOR_ID]);
   Serial.println(values[SPEED]);
