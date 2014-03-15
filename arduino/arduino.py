@@ -12,8 +12,10 @@ class Arduino:
 	def __init__(self, port):
 		try :
 			self.serial = serial.Serial(port, 9600)
+			self.active = True
 		except serial.SerialException:
 			self.serial = None
+			self.active = False
 
 	def write(self, message):
 		self.serial.write(message)
