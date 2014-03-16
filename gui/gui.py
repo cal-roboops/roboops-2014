@@ -227,7 +227,7 @@ class Gui():
         #populate sliders
         self.slider_of_motor[LEFT_SENSITIVITY] = self.sliders.add_slider("Left Sensitivity", 0, 100)
         self.slider_of_motor[RIGHT_SENSITIVITY] = self.sliders.add_slider("Right Sensitivity", 0, 100)
-        self.slider_of_motor[ARM_0_SENSITIVITY] = self.sliders.add_slider("Arm 0 Sensitivity", 0, 100)
+        self.slider_of_motor[ARM_0_SENSITIVITY] = self.sliders.add_slider("Arm 0 Sensitivity", 0, 900)
         self.slider_of_motor[ARM_1_SENSITIVITY] = self.sliders.add_slider("Arm 1 Sensitivity", 0, 900)
         self.slider_of_motor[ARM_2_SENSITIVITY] = self.sliders.add_slider("Arm 2 Sensitivity", 0, 600)
         self.slider_of_motor[CLAW_SENSITIVITY] = self.sliders.add_slider("Claw Sensitivity", 0, 600)

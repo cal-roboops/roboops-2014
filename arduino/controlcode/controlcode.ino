@@ -32,20 +32,6 @@ char line[10];
 /* Read a whole line in serial console, wait if the serial is not available */
 void readLine(char* dist)
 {
-//  int i = 0;
-//  char inByte =0;
-//  while(inByte != '!')
-//  {
-//    if (Serial.available())
-//    {
-//      inByte = Serial.read();
-//      Serial.print(inByte);
-//      dist[i] = inByte;
-//      i++;
-//    }
-//  }
-//  Serial.println(" ");
-//  dist[i]='\0';
   Serial.readBytesUntil('!', dist, 9);
 }
 
