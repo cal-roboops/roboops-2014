@@ -34,6 +34,7 @@ char valuesChar[4];
 
 // stores the read line
 char line[10];
+char last[10];
 
 /* Read a whole line in serial console, wait if the serial is not available */
 void readLine(char* dist)
@@ -133,6 +134,7 @@ void setup()
   
   swerves[0].begin(9600);
   Serial.begin(9600);
+  Serial.setTimeout(100);
 }
 
 void loop()
@@ -147,5 +149,10 @@ void loop()
   
   flushBuffer();
   
-  activate(values[MOTOR_ID], values[SPEED]);
+  
+  //if (strcmp(line, last) != 0) {
+    activate(values[MOTOR_ID], values[SPEED]);
+  //}
+  
+  //strlcpy(last, line,sizeof(last));
 }
