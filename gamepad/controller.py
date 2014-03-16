@@ -138,16 +138,32 @@ class RobotController(Controller) :
 
 		self.clear_funcs()
 
+		self.pre_values = {}
+		self.pre_values[0] = None
+		self.pre_values[1] = None
+
+		self.pre_values[2] = None
+
 		def drive_left(magnitude) :
-			self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
-			self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
+			if(self.pre_values[0] != magnitude) :
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
+				self.pre_values[0] = magnitude
 
 		def drive_right(magnitude) :
-			self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
-			self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
+			if(self.pre_values[1] != magnitude) :
+				self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
+				self.pre_values[1] = magnitude
+
+		def drive_actuator(magnitude) :
+			if(self.pre_values[2] != magnitude) :
+				self.queue_out.put(Serialize.RawMotor(AXIS, TRIGGER, LEFT_SENSITIVITY, BACK_LEFT_SWERVE, magnitude).dump())
+				self.pre_values[2] = magnitude
 
 		self.bind_axis(L_ANALOG_Y, drive_left)
 		self.bind_axis(R_ANALOG_Y, drive_right)
+		self.bind_axis(TRIGGER, drive_actuator)
 
 	def generate_motor_func(self, type, input_id, sensitivity_id, motor_id) :
 		def func(magnitude) :
