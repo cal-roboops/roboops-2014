@@ -116,7 +116,7 @@ void setup()
   pinMode(ENCODER_B_R, INPUT);
   pinMode(ENCODER_F_L, INPUT);
   pinMode(ENCODER_F_R, INPUT);
-  swerves[0] = RoboClaw(10, 11, 10000); // Pin 10 on the Arduino connects to S2 on 10 and Pin 11 connects to S1 on the RoboClaw
+  swerves[0] = RoboClaw(10, 11, 100); // Pin 10 on the Arduino connects to S2 on 10 and Pin 11 connects to S1 on the RoboClaw
   //swerves[1] = RoboClaw(10, 11, 10000); 
   //swerves[2] = RoboClaw(10, 11, 10000); 
   //swerves[3] = RoboClaw(10, 11, 10000);
@@ -124,7 +124,7 @@ void setup()
   encoders[0] = ENCODER_B_L;
   encoders[1] = ENCODER_B_R;
   encoders[2] = ENCODER_F_L;
-  encdoers[3] = ENCODER_F_R;
+  encoders[3] = ENCODER_F_R;
   
   addresses[0] = ADDRESS_B_L;
   addresses[1] = ADDRESS_B_R;
@@ -133,7 +133,6 @@ void setup()
   
   swerves[0].begin(9600);
   Serial.begin(9600);
-  destination = getPosition(swerve1_encoder);
 }
 
 void loop()
@@ -147,7 +146,6 @@ void loop()
   parseLine(line);
   
   flushBuffer();
-  delay(100);
   
   activate(values[MOTOR_ID], values[SPEED]);
 }

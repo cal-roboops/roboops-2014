@@ -1,0 +1,94 @@
+#######################################
+# Syntax Coloring Map for Orion
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Orion	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setBalanceMode	KEYWORD2
+setBalanceTransRate	KEYWORD2
+setBalanceAngleRate	KEYWORD2
+getBalanceMode	KEYWORD2
+getBalanceTransX	KEYWORD2
+getBalanceTransY	KEYWORD2
+getBalanceTransZ	KEYWORD2
+getBalancePitch	KEYWORD2
+getBalanceRoll	KEYWORD2
+setBodyPos	KEYWORD2
+setLegPos	KEYWORD2
+begin	KEYWORD2
+end	KEYWORD2
+setPOffset	KEYWORD2
+setAOffset	KEYWORD2
+setPulse	KEYWORD2
+setAngle	KEYWORD2
+setSpeed	KEYWORD2
+setTime	KEYWORD2
+setPinHigh	KEYWORD2
+setPinLow	KEYWORD2
+setPort	KEYWORD2
+queryMove	KEYWORD2
+queryPOffset	KEYWORD2
+queryAOffset	KEYWORD2
+queryPulse	KEYWORD2
+queryAngle	KEYWORD2
+queryFBPulse	KEYWORD2
+queryFBAngle	KEYWORD2
+queryFBError	KEYWORD2
+queryVersion	KEYWORD2
+queryVoltage	KEYWORD2
+pinState	KEYWORD2
+pinStateL	KEYWORD2
+resetRegs	KEYWORD2
+getReg	KEYWORD2
+setReg	KEYWORD2
+stopMove	KEYWORD2
+stopPulse	KEYWORD2
+group	KEYWORD2
+calcMove	KEYWORD2
+setXPos	KEYWORD2
+setYPos	KEYWORD2
+setZPos	KEYWORD2
+setWPos	KEYWORD2
+setXYZPos	KEYWORD2
+writeRegisters	KEYWORD2
+getXPos	KEYWORD2
+getYPos	KEYWORD2
+getZPos	KEYWORD2
+getWPos	KEYWORD2
+queryForce	KEYWORD2
+setForce	KEYWORD2
+enableForce	KEYWORD2
+enableIKForce	KEYWORD2
+queryForceTrig	KEYWORD2
+queryIKForceTrig	KEYWORD2
+setServoDir	KEYWORD2
+setServoIKDir	KEYWORD2
+setServoIKPin	KEYWORD2
+setServoIKLength	KEYWORD2
+setServoMin	KEYWORD2
+setServoMax	KEYWORD2
+setServoDegree	KEYWORD2
+queryServoMin	KEYWORD2
+queryServoMax	KEYWORD2
+enableIKMinMax	KEYWORD2
+queryAtLimits	KEYWORD2
+execute	KEYWORD2
+gaitSelect	KEYWORD2
+execGait	KEYWORD2
+tone	KEYWORD2
+checkLipo	KEYWORD2
+green	KEYWORD2
+red	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
