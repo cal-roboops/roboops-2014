@@ -18,7 +18,7 @@ def main():
 
     g = Gui(control_side_in, control_side_out)
     z = RobotController(0, control_side_in)
-    z.set_arm_mode()
+    z.set_drive_mode()
 
     b = start_new_thread(g.read_inputs, ())
     z = start_new_thread(z.update_loop, ())
