@@ -82,6 +82,8 @@ void arm(int motor, int spd) {
     case 10:
       motor=0;
       break;
+    case 9:
+      motor=1;
   }
   if (spd<0) {
     digitalWrite(dirPins[motor], 1);
