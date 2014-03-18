@@ -1,0 +1,24 @@
+#######################################
+# Syntax Coloring Map BMServo
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+BMServo	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+Begin KEYWORD2
+SetAOffset KEYWORD2
+SetAngle	KEYWORD2
+QueryAngle KEYWORD2
+QueryFBAngle KEYWORD2
+StopPulse KEYWORD2
+Update KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
