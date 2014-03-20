@@ -22,11 +22,13 @@ class Endpoint():
     def send(self, function):
         while self.isOn:
             sendstring = function() + "\0"
-            #print(sendstring)
             if type(sendstring) == type("hi") :
                 sendstring = sendstring.encode(encoding='UTF-8')
-            #print("sent!\n")
-            self.sc.sendall(sendstring)
+            success = self.sc.sendall(sendstring)
+            if success == 0:
+                self.isOn = False
+                self.sc.close()
+                self.fnError()
     def receive(self, function):
         while self.isOn:
             str_recvd = ""
@@ -39,6 +41,7 @@ class Endpoint():
 
             if(str_recvd == ""):
                 self.isOn = False
+                self.sc.close()
                 self.fnError()
 
             while(self.stored.find("\0") > -1):
