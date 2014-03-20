@@ -8,7 +8,7 @@ from socketEndpoint import Server, Client
 
 from serialize import Serialize
 
-from constants import *
+from constants.constants import *
 
 import sys
 

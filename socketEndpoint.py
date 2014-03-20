@@ -8,15 +8,19 @@ def defaultIn():
 	message = input()
 	return message
 
+def defaultError():
+    print("Socket disconnected!")
+
 class Endpoint():
-    def __init__(self, fnSend, fnReceive) :
+    def __init__(self, fnSend, fnReceive, fnError) :
         self.fnSend = fnSend
         self.fnReceive = fnReceive
+        self.fnError = fnError
+        self.isOn = True
         self.stored = ""
-        pass
 
     def send(self, function):
-        while True:
+        while self.isOn:
             sendstring = function() + "\0"
             #print(sendstring)
             if type(sendstring) == type("hi") :
@@ -24,8 +28,17 @@ class Endpoint():
             #print("sent!\n")
             self.sc.sendall(sendstring)
     def receive(self, function):
-        while True:
-            self.stored += self.sc.recv(4028).decode(encoding='UTF-8')
+        while self.isOn:
+            try:
+                str_recvd = self.sc.recv(4028).decode(encoding='UTF-8')
+                self.stored += str_recvd
+            except Exception as e:
+                self.isOn = False
+                fnError()
+
+            if(str_recvd == ""):
+                self.isOn = False
+                fnError()
 
             while(self.stored.find("\0") > -1):
                 null_ptr = self.stored.find("\0")
@@ -38,8 +51,8 @@ class Endpoint():
         Thread(None, self.receive, None, (self.fnReceive,)).start()
 
 class Server(Endpoint):
-    def __init__(self, host='0.0.0.0', port=800, fnSend=defaultIn, fnReceive=defaultOut):
-        Endpoint.__init__(self, fnSend, fnReceive)
+    def __init__(self, host='0.0.0.0', port=800, fnSend=defaultIn, fnReceive=defaultOut, fnError=defaultError):
+        Endpoint.__init__(self, fnSend, fnReceive, fnError)
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -52,8 +65,8 @@ class Server(Endpoint):
         print('Socket connects'+repr(self.sc.getsockname())+'and '+repr(self.sc.getpeername()))
 
 class Client(Endpoint):
-    def __init__(self, host='localhost', port=800, fnSend=defaultIn, fnReceive=defaultOut):
-        Endpoint.__init__(self, fnSend, fnReceive)
+    def __init__(self, host='localhost', port=800, fnSend=defaultIn, fnReceive=defaultOut, fnError=defaultError):
+        Endpoint.__init__(self, fnSend, fnReceive, fnError)
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
