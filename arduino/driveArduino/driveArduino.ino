@@ -91,23 +91,39 @@ void activate(int motor, int value)
 {
   float destination = float(value);
   float delta;
+  int isEncoder;
   
   switch(motor)
   {
     case 6:
       motor=0;
+      isEncoder = 1;
       break;
   }
   
-  delta = normalize(getPosition(encoders[motor]) - destination);
-  
-  if(delta >= 0)
+  if(isEncoder)
   {
-    swerves[motor].ForwardM1(addresses[motor], map(delta, 0, 180, 0, 64));
+    delta = normalize(getPosition(encoders[motor]) - destination);
+    
+    if(delta >= 0)
+    {
+      swerves[motor].ForwardM1(addresses[motor], map(delta, 0, 180, 0, 64));
+    }
+    else
+    {
+      swerves[motor].BackwardM1(addresses[motor], map(-1*delta, 0, 180, 0, 64));       
+    }
   }
   else
   {
-    swerves[motor].BackwardM1(addresses[motor], map(-1*delta, 0, 180, 0, 64));       
+    if(value > 0)
+    {
+      swerves[motor].ForwardM2(addresses[motor], map(value, 0, 1000, 0, 64));
+    }
+    else
+    {
+      swerves[motor].BackwardM2(addresses[motor], map(-1*value, 0, 1000, 0, 64)); 
+    }
   }
 }
 
