@@ -29,6 +29,7 @@ class Endpoint():
             self.sc.sendall(sendstring)
     def receive(self, function):
         while self.isOn:
+            str_recvd = ""
             try:
                 str_recvd = self.sc.recv(4028).decode(encoding='UTF-8')
                 self.stored += str_recvd
