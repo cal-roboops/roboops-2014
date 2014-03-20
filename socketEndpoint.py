@@ -34,11 +34,11 @@ class Endpoint():
                 self.stored += str_recvd
             except Exception as e:
                 self.isOn = False
-                fnError()
+                self.fnError()
 
             if(str_recvd == ""):
                 self.isOn = False
-                fnError()
+                self.fnError()
 
             while(self.stored.find("\0") > -1):
                 null_ptr = self.stored.find("\0")
