@@ -52,6 +52,8 @@ class motorManager():
 			self.arduino[port].write(self.translate(port, value))
 			print("Wrote to arduino! Reading from arduino: ")
 			print(self.arduino[port].read())
+		else :
+			print("Arduino not active!")
 
 	def translate(self, port, value) :
 		return str(port).zfill(2) + ((";1;" + str(-int(value)).zfill(3)) if value < 0 else (";0;" + str(int(value)).zfill(3))) + "!"

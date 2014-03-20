@@ -112,6 +112,12 @@ class Sliders(LabelFrame):
         self._num_sliders += 1
         return slid
 
+    def add_slider_alt(self, min, max):
+        slid = Scale(self, from_=min, to=max, orient=HORIZONTAL,length=WIDTH//5, borderwidth=0, bg=COLOR_0, fg=COLOR_5, highlightthickness=0,sliderrelief=FLAT,activebackground=COLOR_4,troughcolor=COLOR_6,tickinterval=int((max-min)/4))
+        slid.grid(row = self._num_sliders*2 + 2, column = 0,sticky=E)
+        self._num_sliders += 1
+        return slid
+
     def get_value(self, name):
         assert self._sliders[name], "Does not exist."
         return self._sliders[name].get()
@@ -225,19 +231,18 @@ class Gui():
         self.readouts[CAM_Y] = self.robot_readout_cam.add_label("Cam Y", "0")
 
         #populate sliders
-        self.slider_of_motor[LEFT_SENSITIVITY] = self.sliders.add_slider("Left Sensitivity Neg", 0, 600)
-        self.slider_of_motor[RIGHT_SENSITIVITY] = self.sliders.add_slider("Right Sensitivity Neg", 0, 100)
-        self.slider_of_motor[ARM_0_SENSITIVITY] = self.sliders.add_slider("Arm 0 Sensitivity Neg", 0, 900)
-        self.slider_of_motor[ARM_1_SENSITIVITY] = self.sliders.add_slider("Arm 1 Sensitivity Neg", 0, 900)
-        self.slider_of_motor[ARM_2_SENSITIVITY] = self.sliders.add_slider("Arm 2 Sensitivity Neg", 0, 600)
-        self.slider_of_motor[CLAW_SENSITIVITY] = self.sliders.add_slider("Claw Sensitivity Neg", 0, 600)
-
-        self.slider_of_motor[LEFT_SENSITIVITYA] = self.sliders.add_slider("Left Sensitivity Pos", 0, 600)
-        self.slider_of_motor[RIGHT_SENSITIVITYA] = self.sliders.add_slider("Right Sensitivity Pos", 0, 100)
-        self.slider_of_motor[ARM_0_SENSITIVITYA] = self.sliders.add_slider("Arm 0 Sensitivity Pos", 0, 900)
-        self.slider_of_motor[ARM_1_SENSITIVITYA] = self.sliders.add_slider("Arm 1 Sensitivity Pos", 0, 900)
-        self.slider_of_motor[ARM_2_SENSITIVITYA] = self.sliders.add_slider("Arm 2 Sensitivity Pos", 0, 600)
-        self.slider_of_motor[CLAW_SENSITIVITYA] = self.sliders.add_slider("Claw Sensitivity Pos", 0, 600)
+        self.slider_of_motor[LEFT_SENSITIVITYA] = self.sliders.add_slider("Left Sensitivity", 0, 600)
+        self.slider_of_motor[LEFT_SENSITIVITY] = self.sliders.add_slider_alt(0, 600)
+        self.slider_of_motor[RIGHT_SENSITIVITYA] = self.sliders.add_slider("Right Sensitivity", 0, 100)
+        self.slider_of_motor[RIGHT_SENSITIVITY] = self.sliders.add_slider_alt(0, 100)
+        self.slider_of_motor[ARM_0_SENSITIVITYA] = self.sliders.add_slider("Arm 0 Sensitivity", 0, 900)
+        self.slider_of_motor[ARM_0_SENSITIVITY] = self.sliders.add_slider_alt(0, 900)
+        self.slider_of_motor[ARM_1_SENSITIVITYA] = self.sliders.add_slider("Arm 1 Sensitivity", 0, 900)
+        self.slider_of_motor[ARM_1_SENSITIVITY] = self.sliders.add_slider_alt(0, 900)
+        self.slider_of_motor[ARM_2_SENSITIVITYA] = self.sliders.add_slider("Arm 2 Sensitivity", 0, 600)
+        self.slider_of_motor[ARM_2_SENSITIVITY] = self.sliders.add_slider_alt(0, 600)
+        self.slider_of_motor[CLAW_SENSITIVITYA] = self.sliders.add_slider("Claw Sensitivity", 0, 600)
+        self.slider_of_motor[CLAW_SENSITIVITY] = self.sliders.add_slider_alt(0, 600)
 
         #populate user inputs
         self.controller_readouts[BUTTON][A_BUTTON] = self.input_readout.add_label("A", "0")

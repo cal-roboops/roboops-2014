@@ -20,19 +20,21 @@ def main():
     robot_side_out = Queue()
     robot_side_in = Queue()
 
-    robServer = Server('0.0.0.0', int(sys.argv[1]), robot_side_out.get, robot_side_in.put)
-
     r = motorManager(robot_side_in, robot_side_out, sys.argv[2], sys.argv[3])
 
+    robServer = Server('0.0.0.0', int(sys.argv[1]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
+
     c = start_new_thread(r.read_inputs, ())
-    #t = start_new_thread(r.check_timeouts, ())
-    #c = start_new_thread(r.update, ())
 
     robServer.start()
-    while(r.is_active):
+
+    while(robServer.isOn):
         pass
 
     r.shut_off()
+    robServer.close()
+
+    print("Robot communications has exited.")
 
 if __name__ == '__main__':
     main();

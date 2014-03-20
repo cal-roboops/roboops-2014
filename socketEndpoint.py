@@ -1,4 +1,5 @@
 import socket
+import select
 from threading import Thread
 
 def defaultOut(message):
@@ -11,6 +12,9 @@ def defaultIn():
 def defaultError():
     print("Socket disconnected!")
 
+def defaultShouldEnd():
+    return True
+
 class Endpoint():
     def __init__(self, fnSend, fnReceive, fnError) :
         self.fnSend = fnSend
@@ -21,14 +25,15 @@ class Endpoint():
 
     def send(self, function):
         while self.isOn:
-            sendstring = function() + "\0"
-            if type(sendstring) == type("hi") :
-                sendstring = sendstring.encode(encoding='UTF-8')
-            success = self.sc.sendall(sendstring)
-            if success == 0:
-                self.isOn = False
-                self.sc.close()
-                self.fnError()
+            try:
+                sendstring = function() + "\0"
+                if type(sendstring) == type("hi") :
+                    sendstring = sendstring.encode(encoding='UTF-8')
+                success = self.sc.sendall(sendstring)
+            except:
+                pass
+        print("Sending socket closed!")
+
     def receive(self, function):
         while self.isOn:
             str_recvd = ""
@@ -36,19 +41,22 @@ class Endpoint():
                 str_recvd = self.sc.recv(4028).decode(encoding='UTF-8')
                 self.stored += str_recvd
             except Exception as e:
-                self.isOn = False
-                self.fnError()
+                self.close()
 
             if(str_recvd == ""):
-                self.isOn = False
-                self.sc.close()
-                self.fnError()
+                self.close()
 
             while(self.stored.find("\0") > -1):
                 null_ptr = self.stored.find("\0")
                 temp_msg = self.stored[:null_ptr]
                 self.stored = self.stored[null_ptr + 1:]
                 function(temp_msg)
+        print("Receiving socket closed!")
+
+    def close(self):
+        self.isOn = False
+        self.sc.shutdown(2)
+        self.fnError()
 
     def start(self):
         Thread(None, self.send, None, (self.fnSend,)).start()
@@ -66,7 +74,7 @@ class Server(Endpoint):
         print('Listening at '+repr(self.s.getsockname()))
         self.sc, self.sockname = self.s.accept()
         print('We have accepted a connection from'+repr(self.sockname))
-        print('Socket connects'+repr(self.sc.getsockname())+'and '+repr(self.sc.getpeername()))
+        print('Socket connects '+repr(self.sc.getsockname())+' and '+repr(self.sc.getpeername()))
 
 class Client(Endpoint):
     def __init__(self, host='localhost', port=800, fnSend=defaultIn, fnReceive=defaultOut, fnError=defaultError):
