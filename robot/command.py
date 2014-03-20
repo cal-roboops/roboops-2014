@@ -72,6 +72,10 @@ class motorManager():
 				if self.motor_timeouts[motor] < time.time() :
 					self.update_port(motor, 0)
 
+	def emergency_stop(self) :
+		for port in self.arduino:
+			self.update_port(port, 0)
+
 	def read_inputs(self) :
 		while(self.is_active) :
 			Serialize.run_robot(self.queue_in.get(), self)
