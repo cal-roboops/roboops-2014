@@ -244,10 +244,6 @@ class Gui():
         self.controller_readouts[AXIS][R_ANALOG_X] = self.input_readout.add_label("R Analog X", "0")
         self.controller_readouts[AXIS][TRIGGER] = self.input_readout.add_label("Trigger", "0")
 
-        #output line populate test
-        for i in range(100):
-            self.output_display.add_line("This is " + str(i))
-
     def gui_loop(self) :
         self.root.mainloop()
 
