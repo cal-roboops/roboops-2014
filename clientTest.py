@@ -8,6 +8,8 @@ from socketEndpoint import Server, Client
 
 from serialize import Serialize
 
+from constants import *
+
 import sys
 
 def main():

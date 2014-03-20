@@ -1,7 +1,7 @@
 from Tkinter import *
 from random import randint
 from KeyManager import *
-from constants import *
+from constants.constants import *
 
 from Queue import Queue
 

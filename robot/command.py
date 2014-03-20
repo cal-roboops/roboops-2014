@@ -1,6 +1,6 @@
 import time
 from collections import deque
-from constants import *
+from constants.constants import *
 from Queue import Queue
 from serialize import Serialize
 import arduino.arduino as arduino

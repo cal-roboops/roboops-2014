@@ -1,6 +1,6 @@
 import pygame
 import time
-from constants import *
+from constants.constants import *
 
 from serialize import Serialize
 
