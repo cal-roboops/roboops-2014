@@ -7,9 +7,8 @@ Message Scheme
 ==============
 
 Beaglebone->Arduino
+	mm;n;ppp!
 
-function(1char);speed(variable char);position(variable char)\n
-
-example: Move motor 0 to position 1013 at speed 255
-
-0;255;1013\n
+	mm: motor id
+	n: negative flag (0 or 1)
+	ppp: position, in range (-1000, 1000)
