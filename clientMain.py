@@ -18,16 +18,21 @@ def main():
 
     conClient = Client(sys.argv[1], int(sys.argv[2]), lambda : control_side_out.get(block=True, timeout=1), control_side_in.put)
 
-    g = Gui(control_side_in, control_side_out)
-    z = RobotController(0, control_side_in)
-    z.set_drive_mode()
+    gui = Gui(control_side_in, control_side_out)
+    controller_1 = RobotController(0, control_side_in)
+    controller_1.set_drive_mode()
 
-    b = start_new_thread(g.read_inputs, ())
-    x = start_new_thread(z.update_loop, ())
+    controller_2 = RobotController(1, control_side_in)
+    controller_2.set_arm_mode()
+
+    gui_input_thread_id = start_new_thread(gui.read_inputs, ())
+    controller_1_thread_id = start_new_thread(controller_1.update_loop, ())
+    controller_2_thread_id = start_new_thread(controller_2.update_loop, ())
     conClient.start()
-    a = g.gui_loop()
+    gui_thread_id = gui.gui_loop()
 
-    z.shut_off()
+    controller_1.shut_off()
+    controller_2.shut_off()
     conClient.close()
 
     print("Command center has exited.")
