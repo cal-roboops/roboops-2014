@@ -7,12 +7,20 @@
           value: 100
  
  =================*/
- 
+#define MINCLAW 100
+#define MAXCLAW 500
+#define MINELBOW 100
+#define MAXELBOW 500
+#define MINSHOUL 100
+#define MAXSHOUL 500
+#define MINROT 100
+#define MAXROT 500
 // stores the interpreted values from parsing
 int values[2];
 
 int pwmPins[4];
 int dirPins[4];
+bool dirState[4];
 
 const int MOTOR_ID = 0,
           SPEED = 1;
@@ -77,11 +85,30 @@ void arm(int motor, int spd) {
   if (spd<0) {
     digitalWrite(dirPins[motor], 1);
     spd = -spd;
+    dirState[motor] = 1;
   } else {
     digitalWrite(dirPins[motor], 0);
+    dirState[motor] = 0;
   }
   long a = 255*long(spd)/1000;
   analogWrite(pwmPins[motor], a);
+}
+
+void checkArm() {
+  int pot = analogRead(A0);
+  if ((pot < MINELBOW && dirState[0]) || (pot > MAXELBOW && !dirState[0])) {
+    analogWrite(pwmPins[0], 0);
+  }
+  if ((pot < MINSHOUL && dirState[1]) || (pot > MAXSHOUL && !dirState[1])) {
+    analogWrite(pwmPins[1], 0);
+  }
+  if ((pot < MINCLAW && dirState[2]) || (pot > MAXCLAW && !dirState[2])) {
+    analogWrite(pwmPins[2], 0);
+  }
+  if ((pot < MINROT && dirState[3]) || (pot > MAXROT && !dirState[3])) {
+    analogWrite(pwmPins[3], 0);
+  }
+  
 }
 
 void setup() {
@@ -99,6 +126,10 @@ void setup() {
   dirPins[1] = 4;
   dirPins[2] = 7;
   dirPins[3] = 8;
+  dirState[0] = 0;
+  dirState[1] = 0;
+  dirState[2] = 0;
+  dirState[3] = 0;
   
   analogWrite(pwmPins[0], 0);
   analogWrite(pwmPins[1], 0);
@@ -128,10 +159,9 @@ void loop() {
   Serial.flush();
   delay(10);
   parseLine(line);
-  
+  checkArm();
   flushBuffer();
   delay(100);
-
   arm(values[MOTOR_ID],values[SPEED]);
 }
 
