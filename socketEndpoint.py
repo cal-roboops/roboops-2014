@@ -1,6 +1,8 @@
 import socket
 import select
 from threading import Thread
+from datetime import datetime, timedelta
+from time import sleep
 
 def defaultOut(message):
 	print(message)
@@ -16,12 +18,39 @@ def defaultShouldEnd():
     return True
 
 class Endpoint():
+    heartbeat_interval = 1
+    heartbeat_msg = "HEARTBEAT\0"
+    last_update = None
+    wait_time = 10
+
     def __init__(self, fnSend, fnReceive, fnError) :
         self.fnSend = fnSend
         self.fnReceive = fnReceive
         self.fnError = fnError
         self.isOn = True
         self.stored = ""
+
+    def update_time(self):
+        self.last_update = datetime.today()
+
+    def heartbeat_routine(self):
+        while self.isOn:
+            try:
+                sendstring = heartbeat_msg.encode(encoding='UTF-8')
+                success = self.sc.sendall(sendstring)
+            except:
+                pass
+            if self.connection_expired():
+                print "EXPIRED!"
+                self.close()
+            sleep(self.heartbeat_interval)
+
+
+    def connection_expired(self):
+        if self.last_update != None:
+            return (datetime.today() - self.last_update).total_seconds() > self.wait_time
+        else:
+            return False
 
     def send(self, function):
         while self.isOn:
@@ -30,6 +59,7 @@ class Endpoint():
                 if type(sendstring) == type("hi") :
                     sendstring = sendstring.encode(encoding='UTF-8')
                 success = self.sc.sendall(sendstring)
+
             except:
                 pass
         print("Sending socket closed!")
@@ -39,12 +69,17 @@ class Endpoint():
             str_recvd = ""
             try:
                 str_recvd = self.sc.recv(4028).decode(encoding='UTF-8')
-                self.stored += str_recvd
+                if str_recvd == self.heartbeat_msg:
+                    self.update_time()
+                else:
+                    self.stored += str_recvd
             except Exception as e:
                 self.close()
 
+
             if(str_recvd == ""):
                 self.close()
+
 
             while(self.stored.find("\0") > -1):
                 null_ptr = self.stored.find("\0")
@@ -61,6 +96,7 @@ class Endpoint():
     def start(self):
         Thread(None, self.send, None, (self.fnSend,)).start()
         Thread(None, self.receive, None, (self.fnReceive,)).start()
+        Thread(None, self.heartbeat_routine, None, ()).start()
 
 class Server(Endpoint):
     def __init__(self, host='0.0.0.0', port=800, fnSend=defaultIn, fnReceive=defaultOut, fnError=defaultError):
