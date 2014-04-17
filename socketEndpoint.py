@@ -35,7 +35,6 @@ class Endpoint():
 
     def heartbeat_routine(self):
         while self.isOn:
-            print self.last_update
             try:
                 sendstring = self.heartbeat_msg.encode(encoding='UTF-8')
                 success = self.sc.sendall(sendstring)
