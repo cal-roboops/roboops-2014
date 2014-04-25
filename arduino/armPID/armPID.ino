@@ -1,7 +1,4 @@
-/********************************************************
- * PID Basic Example
- * Reading analog input 0 to control analog PWM output 3
- ********************************************************/
+
 
 #include <PID_v1.h>
 
@@ -31,10 +28,12 @@ bool dirState[4];
 
 #define SAMPLETIME 100
 //Define Variables we'll be connecting to
-double Setpoint, Input, Output;
+double Setpoint, LastInput, Input, Output, Speed;
+unsigned long time;
 //Specify the links and initial tuning parameters
-PID ElbowPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
-
+PID ElbowPID(&Input, &Output, &Setpoint,1,0,0, DIRECT);
+PID ShoulPID(&Input, &Output, &Setpoint,1,0,0, DIRECT);
+PID RotPID(&Input, &Output, &Setpoint,1,0,0, DIRECT);
 
 const int MOTOR_ID = 0,
           SPEED = 1;
@@ -71,7 +70,6 @@ void parseLine(char *line)
   {
     valuesChar[i] = line[i + 5];
   }
-
   values[SPEED] = atoi(valuesChar)* (line[3] == '1' ? -1 : 1);
 }
 
@@ -98,7 +96,7 @@ void arm(int motor, int spd) {
   }
   if (spd<0) {
     digitalWrite(dirPins[motor], 1);
-    spd = -spd;
+    spd = -spd,;
     dirState[motor] = 1;
   } else {
     digitalWrite(dirPins[motor], 0);
@@ -162,13 +160,25 @@ void setup() {
   pinMode(8, OUTPUT);
   
     //initialize the variables we're linked to
+  LastInput = 0;
   Input = 0;
-  Setpoint = 0;
+  Setpoint = 500;
+  Output = 0;
+  Speed = 0;
+  time = millis();
   
   //turn the PID on
   ElbowPID.SetMode(AUTOMATIC);
   ElbowPID.SetSampleTime(SAMPLETIME);
+  ElbowPID.SetOutputLimits(-1000,1000);  
   
+  ShoulPID.SetMode(AUTOMATIC);
+  ShoulPID.SetSampleTime(SAMPLETIME);
+  ShoulPID.SetOutputLimits(-255,255);  
+  
+  RotPID.SetMode(AUTOMATIC);
+  RotPID.SetSampleTime(SAMPLETIME);
+  RotPID.SetOutputLimits(-255,255);  
 }
 
 
@@ -177,17 +187,29 @@ void loop() {
   Serial.flush();
   delay(10);
   readLine(line);
-  Serial.println(line);
+  //Serial.println(line);
   Serial.flush();
   delay(10);
   parseLine(line);
   checkArm();
   flushBuffer();
   delay(100);
-  arm(values[MOTOR_ID],values[SPEED]);
   
-  Input = analogRead(0);
+  Setpoint = values[SPEED];
+  LastInput = Input;
+  Input = analogRead(A0);
+  Speed= 1000*((Input-LastInput)/(millis()-time));
+  time=millis();
+  
+  Serial.print("Input: ");
+  Serial.println(Speed);
+  Serial.print("Setpoint: ");
+  Serial.println(Setpoint);
   ElbowPID.Compute();
-  analogWrite(3,Output);
+  
+  Serial.print("Output: ");
+  Serial.println(Output);
+  arm(values[MOTOR_ID],Output);
+  //analogWrite(3,Output);
   
 }
