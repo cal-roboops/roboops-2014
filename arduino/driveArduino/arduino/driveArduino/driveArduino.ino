@@ -103,11 +103,11 @@ void activate(int motor, int value)
   int isEncoder;
   
   if (destination >= 240) {
-    rot = 2;
+    newRot = 2;
   } else if (destination >= 120) {
-    rot = 1;
+    newRot = 1;
   }
-  currPos = destination - rot*120;
+  destination = destination - newRot*120;
 
   switch(motor)
   {
@@ -120,8 +120,8 @@ void activate(int motor, int value)
   if(isEncoder)
   {
     //currPos = getPosition(encoders[motor]);
-    //delta = normalize(getPosition(encoders[motor]) - destination);
-    delta = currPos;
+    delta = normalize(getPosition(encoders[motor]) - destination);
+    //delta = currPos;
     
     while (rot != newRot) {
       if (rot > newRot) {
@@ -130,6 +130,9 @@ void activate(int motor, int value)
       } else {
         swerves[motor].BackwardM2(addresses[motor],64);
         rot++;
+      }
+      if (rot == 3) {
+        rot = 0;
       }
     }
     if (rot == 3) {
