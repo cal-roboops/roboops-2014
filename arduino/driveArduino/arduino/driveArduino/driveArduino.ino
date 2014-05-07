@@ -77,9 +77,14 @@ void flushBuffer()
 
 double getPosition(int pin)
 {
-  double p = pulseIn(pin, HIGH);
+  double p1 = pulseIn(pin, HIGH);
+  double p2 = pulseIn(pin, HIGH);
+  double p3 = pulseIn(pin, HIGH);
+  double p4 = pulseIn(pin, HIGH);
+  double p5 = pulseIn(pin, HIGH);
+  double p = (p1+p2+p3+p4+p5)/5;
   Serial.println(p);
-  p = map(p, 0, 1300, 0, 360);  //was 1048 instead of 1300: should be limite of the encoder
+  p = map(p, 0, 1300, 0, 120);  //was 1048 instead of 1300: should be limite of the encoder // 
   return p;
 }
 
@@ -106,9 +111,16 @@ void activate(int motor, int value)
     newRot = 2;
   } else if (destination >= 120) {
     newRot = 1;
+  } else {
+    newRot = 0;
   }
   destination = destination - newRot*120;
-
+  if (destination < 0) {
+    destination = 0;
+  }
+  Serial.println(rot);
+  Serial.println(destination);
+  
   switch(motor)
   {
   case 6:
@@ -120,40 +132,40 @@ void activate(int motor, int value)
   if(isEncoder)
   {
     //currPos = getPosition(encoders[motor]);
-    delta = normalize(getPosition(encoders[motor]) - destination);
-    //delta = currPos;
+    //delta = normalize(getPosition(encoders[motor]) - destination);
+    delta = getPosition(encoders[motor]) - destination;
     
     while (rot != newRot) {
       if (rot > newRot) {
-        swerves[motor].ForwardM1(addresses[motor],64);
+        swerves[motor].ForwardM1(addresses[motor],127);
         rot--;
       } else {
-        swerves[motor].BackwardM2(addresses[motor],64);
+        swerves[motor].BackwardM1(addresses[motor],127);
         rot++;
       }
-      if (rot == 3) {
+      if (rot == 3 || rot == -3) {
         rot = 0;
       }
     }
-    if (rot == 3) {
+    if (rot == 3 || rot == -3) {
       rot = 0;
     }
-    if (currPos > destination) {
+    /*if (currPos > destination) {
       //swerves[motor].ForwardM1(addresses[motor], map(delta, 0, 180, 0, 64));
       swerves[motor].ForwardM1(addresses[motor], map(delta, 0, 359, 0, 127));
     } else if (currPos < destination) {
       //swerves[motor].BackwardM1(addresses[motor], map(-1*delta, 0, 180, 0, 64)); 
       swerves[motor].BackwardM1(addresses[motor], map(-1*delta, 0, 359, 0, 127)); 
-    }
+    }*/
 
-    //if(delta >= 0)
-    //{
-    //  swerves[motor].ForwardM1(addresses[motor], map(delta, 0, 180, 0, 64));
-    //}
-    //else
-    //{
-    //  swerves[motor].BackwardM1(addresses[motor], map(-1*delta, 0, 180, 0, 64));       
-    //}
+    if(delta >= 0)
+    {
+      swerves[motor].ForwardM1(addresses[motor], map(delta, 0, 119, 0, 127));
+    }
+    else
+    {
+      swerves[motor].BackwardM1(addresses[motor], map(-1*delta, 0, 119, 0, 127));       
+    }
   }
   else
   {
