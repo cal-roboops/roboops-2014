@@ -1,9 +1,8 @@
-from gui.gui import *
-from gui.KeyManager import *
+
 from robot.command import *
 from thread import *
 from Queue import Queue
-from gamepad.controller import RobotController
+#from gamepad.controller import RobotController
 from socketEndpoint import Server, Client
 
 from serialize import Serialize
@@ -30,6 +29,7 @@ def main():
 
     while(robServer.isOn):
         pass
+        sleep(0.001)
 
     r.shut_off()
     robServer.close()

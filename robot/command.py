@@ -3,6 +3,7 @@ from constants.constants import *
 from Queue import Queue
 from serialize import Serialize
 import arduino.arduino as arduino
+from time import sleep
 
 class motorManager():
 	def __init__(self, queue_in, queue_out, arm_port, drive_port) :
@@ -44,6 +45,8 @@ class motorManager():
 	def read_inputs(self) :
 		while(self.is_active) :
 			Serialize.run_robot(self.queue_in.get(), self)
+			sleep(0.001)
+
 
 	def update_port(self, port, value) :
 		self.queue_out.put(Serialize.Motor(port, value).dump())

@@ -62,6 +62,7 @@ class Endpoint():
 
             except:
                 pass
+            sleep(0.001)
         print("Sending socket closed!")
 
     def receive(self, function):
@@ -86,6 +87,7 @@ class Endpoint():
                 temp_msg = self.stored[:null_ptr]
                 self.stored = self.stored[null_ptr + 1:]
                 function(temp_msg)
+            sleep(0.001)
         print("Receiving socket closed!")
 
     def close(self):

@@ -9,8 +9,8 @@
  =================*/
 #define MINCLAW 100
 #define MAXCLAW 500
-#define MINELBOW 100
-#define MAXELBOW 500
+#define MINELBOW 200
+#define MAXELBOW 600
 #define MINSHOUL 100
 #define MAXSHOUL 500
 #define MINROT 100
@@ -21,6 +21,7 @@ int values[2];
 int pwmPins[4];
 int dirPins[4];
 bool dirState[4];
+bool dirLock[4];
 
 const int MOTOR_ID = 0,
           SPEED = 1;
@@ -31,16 +32,27 @@ char motorChar[3];
 
 // stores the read string for values
 char valuesChar[4];
-     
+
+char incomingByte;
 
 // stores the read line
 char line[10];
+char newline[10];
      
 
 /* Read a whole line in serial console, wait if the serial is not available */
 void readLine(char* dist)
 {
+  int count = 0;
   Serial.readBytesUntil('!', dist, 9);
+//  while (Serial.available() > 0 && count<9 && incomingByte != '!') {
+//    // read the incoming byte:
+//    incomingByte = Serial.read();
+//    dist[count] = incomingByte;
+//    count++;
+//    
+//    checkArm();
+//  }
 }
 
 /* Parses a line, writes to global variables */
@@ -84,31 +96,51 @@ void arm(int motor, int spd) {
   }
   if (spd<0) {
     digitalWrite(dirPins[motor], 1);
-    spd = -spd;
+    if (dirLock[motor] && dirState[motor]==1) {
+      spd = 0;
+    } else {
+      spd = -spd;
+      dirLock[motor] = 0;
+    }
     dirState[motor] = 1;
   } else {
     digitalWrite(dirPins[motor], 0);
+    if (dirLock[motor] && dirState[motor]==0) {
+      spd = 0;
+    } else {
+      dirLock[motor] = 0;
+    }
     dirState[motor] = 0;
   }
   long a = 255*long(spd)/1000;
+
   analogWrite(pwmPins[motor], a);
 }
 
 void checkArm() {
   int pot = analogRead(A0);
+//  Serial.print("Position: ");
+//  Serial.println(pot);
+  
   if ((pot < MINELBOW && dirState[0]) || (pot > MAXELBOW && !dirState[0])) {
+    dirLock[0] = 1;
     analogWrite(pwmPins[0], 0);
   }
+  pot = analogRead(A1);
   if ((pot < MINSHOUL && dirState[1]) || (pot > MAXSHOUL && !dirState[1])) {
+     dirLock[1] = 1;
     analogWrite(pwmPins[1], 0);
   }
+  pot = analogRead(A2);
   if ((pot < MINCLAW && dirState[2]) || (pot > MAXCLAW && !dirState[2])) {
+     dirLock[2] = 1;
     analogWrite(pwmPins[2], 0);
   }
+  pot = analogRead(A3);
   if ((pot < MINROT && dirState[3]) || (pot > MAXROT && !dirState[3])) {
+     dirLock[3] = 1;
     analogWrite(pwmPins[3], 0);
   }
-  
 }
 
 void setup() {
@@ -130,6 +162,10 @@ void setup() {
   dirState[1] = 0;
   dirState[2] = 0;
   dirState[3] = 0;
+  dirLock[0] = 0;
+  dirLock[1] = 0;
+  dirLock[2] = 0;
+  dirLock[3] = 0;
   
   analogWrite(pwmPins[0], 0);
   analogWrite(pwmPins[1], 0);
@@ -137,6 +173,7 @@ void setup() {
   analogWrite(pwmPins[3], 0);
   
   Serial.begin(9600);
+  Serial.setTimeout(100);
   
   
   pinMode(2, OUTPUT);
@@ -153,16 +190,22 @@ void setup() {
 void loop() {
   // read from port 1, send to port 0:
   Serial.flush();
+  
   delay(10);
   readLine(line);
+  //checkArm();
   Serial.println(line);
   Serial.flush();
+  checkArm();
   delay(10);
   parseLine(line);
-  checkArm();
+
   flushBuffer();
-  delay(100);
+  delay(10);
+  
   arm(values[MOTOR_ID],values[SPEED]);
+  checkArm();
+  //Serial.println("10");
 }
 
 
