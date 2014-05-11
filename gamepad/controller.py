@@ -22,6 +22,8 @@ class Controller():
 		self.controller = pygame.joystick.Joystick(id)
 		self.controller.init()
 
+		self.id = id
+
 		self.num_buttons = self.controller.get_numbuttons()
 		self.num_axes = self.controller.get_numaxes()
 		self.num_hats = self.controller.get_numhats()
@@ -116,11 +118,102 @@ class RobotController(Controller) :
 		self.pre_values[CLAW] = None
 
 		self.bind_axis(L_ANALOG_X, self.generate_motor_func(AXIS, L_ANALOG_X, ARM_0_SENSITIVITY, ARM_0_SENSITIVITYA, ARM_0))
-		self.bind_axis(L_ANALOG_Y, self.generate_motor_func(AXIS, L_ANALOG_Y, ARM_1_SENSITIVITY, ARM_1_SENSITIVITYA,ARM_1))
-		self.bind_axis(R_ANALOG_Y, self.generate_motor_func(AXIS, R_ANALOG_Y, ARM_2_SENSITIVITY, ARM_2_SENSITIVITYA,ARM_2))
-		self.bind_axis(TRIGGER, self.generate_motor_func(AXIS, TRIGGER, CLAW_SENSITIVITY, CLAW_SENSITIVITYA, CLAW))
+		self.bind_axis(L_ANALOG_Y, self.generate_motor_func(AXIS, L_ANALOG_Y, ARM_1_SENSITIVITY, ARM_1_SENSITIVITYA, ARM_1))
+		self.bind_axis(R_ANALOG_Y, self.generate_motor_func(AXIS, R_ANALOG_Y, ARM_2_SENSITIVITY, ARM_2_SENSITIVITYA, ARM_2))
+		self.bind_axis(TRIGGER, self.generate_motor_func(AXIS, TRIGGER, CLAW_SENSITIVITY, CLAW_SENSITIVITY, CLAW))
+
+	def set_tank_mode(self):
+
+		self.clear_funcs()
+
+		self.pre_values = {}
+		self.pre_values[0] = None
+		self.pre_values[1] = None
+
+		def drive_left(magnitude) :
+			if(self.pre_values[0] != magnitude) :
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
+				self.pre_values[0] = magnitude
+
+		def drive_right(magnitude) :
+			if(self.pre_values[1] != magnitude) :
+				self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
+				self.pre_values[1] = magnitude
+
+		self.bind_axis(L_ANALOG_Y, drive_left)
+		self.bind_axis(R_ANALOG_Y, drive_right)
+
+		self.bind_button(Y_BUTTON, self.set_tank_mode)
+		self.bind_button(B_BUTTON, self.set_spin_mode)
+		self.bind_button(X_BUTTON, self.set_strafe_mode)
+
+	def set_spin_mode(self):
+
+		self.clear_funcs()
+
+		self.pre_values = {}
+		self.pre_values[0] = None
+
+		def drive_wheel(magnitude) :
+			if(self.pre_values[0] != magnitude) :
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_X, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_X, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_X, LEFT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_X, LEFT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
+				self.pre_values[0] = magnitude
+
+		self.bind_axis(L_ANALOG_X, drive_left)
+
+		self.bind_button(Y_BUTTON, self.set_tank_mode)
+		self.bind_button(B_BUTTON, self.set_spin_mode)
+		self.bind_button(X_BUTTON, self.set_strafe_mode)
+
+	def set_strafe_mode(self):
+
+		self.clear_funcs()
+
+		self.pre_values = {}
+		self.pre_values[0] = None
+
+		def drive_wheel(magnitude) :
+			if(self.pre_values[0] != magnitude) :
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
+				self.pre_values[0] = magnitude
+
+		self.bind_axis(L_ANALOG_Y, drive_left)
+
+		self.bind_button(Y_BUTTON, self.set_tank_mode)
+		self.bind_button(B_BUTTON, self.set_spin_mode)
+		self.bind_button(X_BUTTON, self.set_strafe_mode)
+
+	def set_spin_orientation(self):
+
+		self.set_all_swerves(45);
+
+	def set_tank_orientation(self):
+
+		self.set_all_swerves(0);
+
+	def set_strafe_orientation(self):
+
+		self.set_all_swerves(90);
+
+	def set_all_swerves(self, number):
+
+		self.queue_out.put(Serialize.Motor(BACK_LEFT_SWERVE, number));
+		self.queue_out.put(Serialize.Motor(BACK_RIGHT_SWERVE, number));
+		self.queue_out.put(Serialize.Motor(FRONT_LEFT_SWERVE, number));
+		self.queue_out.put(Serialize.Motor(FRONT_RIGHT_SWERVE, number));
 
 	def set_drive_mode(self):
+		"""
+		Deprecated.
+		"""
 
 		self.clear_funcs()
 
@@ -158,7 +251,7 @@ class RobotController(Controller) :
 				self.pre_values[motor_id] = magnitude
 		return func
 
-	def generate_motor_func(self, type, input_id, sensitivity_id1, sensitivity2, motor_id) :
+	def generate_motor_func(self, type, input_id, sensitivity_id1, sensitivity_id2, motor_id) :
 		def func(magnitude) :
 			if magnitude != self.pre_values[motor_id]:
 				if magnitude < 0:
