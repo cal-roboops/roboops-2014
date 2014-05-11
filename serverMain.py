@@ -27,6 +27,7 @@ def main():
 
     while(robServer.isOn):
         pass
+        sleep(0.001)
 
     r.shut_off()
     robServer.close()

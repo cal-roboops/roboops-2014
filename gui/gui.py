@@ -2,7 +2,7 @@ from Tkinter import *
 from random import randint
 from KeyManager import *
 from constants.constants import *
-
+from time import sleep
 from Queue import Queue
 
 from serialize import Serialize
@@ -301,6 +301,7 @@ class Gui():
                 Serialize.run_gui(a, self)
             except Exception as ex:
                 print(type(ex).__name__, ex.args)
+            sleep(0.001)
 
     def update_readout(self, motor, value):
         #self.readouts[motor].update_label(local_names[motor], str(value))]

@@ -35,7 +35,6 @@ class Endpoint():
 
     def heartbeat_routine(self):
         while self.isOn:
-            print self.last_update
             try:
                 sendstring = self.heartbeat_msg.encode(encoding='UTF-8')
                 success = self.sc.sendall(sendstring)
@@ -63,6 +62,7 @@ class Endpoint():
 
             except:
                 pass
+            sleep(0.001)
         print("Sending socket closed!")
 
     def receive(self, function):
@@ -87,6 +87,7 @@ class Endpoint():
                 temp_msg = self.stored[:null_ptr]
                 self.stored = self.stored[null_ptr + 1:]
                 function(temp_msg)
+            sleep(0.001)
         print("Receiving socket closed!")
 
     def close(self):
