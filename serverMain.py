@@ -1,9 +1,6 @@
-from gui.gui import *
-from gui.KeyManager import *
 from robot.command import *
 from thread import *
 from Queue import Queue
-from gamepad.controller import RobotController
 from socketEndpoint import Server, Client
 
 from serialize import Serialize
