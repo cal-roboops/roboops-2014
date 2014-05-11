@@ -7,21 +7,22 @@
 // When using packet serial, each RoboClaw gains a specific address. To send a command to that controller, you must include the
 // controller's address to ensure that it will receive the command.
 #define ADDRESS_B_L 0x80
-#define ADDRESS_B_R 0x80
-#define ADDRESS_F_L 0x80
-#define ADDRESS_F_R 0x80
+#define ADDRESS_B_R 0x81
+#define ADDRESS_F_L 0x82
+#define ADDRESS_F_R 0x83
 
 #define ENCODER_B_L 2
-#define ENCODER_B_R 2
-#define ENCODER_F_L 2
-#define ENCODER_F_R 2
+#define ENCODER_B_R 3
+#define ENCODER_F_L 4
+#define ENCODER_F_R 5
 
-RoboClaw swerves[4]; //0, 1, 2, 3: B_L, B_R, F_L, F_R
+RoboClaw swerves; //0, 1, 2, 3: B_L, B_R, F_L, F_R
 
 int encoders[4]; //0, 1, 2, 3: same as swerves
 char addresses[4];
 
 int values[2];
+int goals[4];
 
 const int MOTOR_ID = 0,
           SPEED = 1;
@@ -34,7 +35,6 @@ char valuesChar[4];
 
 // stores the read line
 char line[10];
-char last[10];
 
 /* Read a whole line in serial console, wait if the serial is not available */
 void readLine(char* dist)
@@ -74,24 +74,11 @@ double getPosition(int pin)
   return p;
 }
 
-double normalize(double delta)
-{
-  if(delta > 180)
-  {
-    delta = delta - 360;
-  }
-  else if(delta < -180)
-  {
-    delta = delta + 360;
-  }
-  return delta;
-}
 
 void activate(int motor, int value)
 {
-  float destination = float(value);
   float delta;
-  int isEncoder;
+  boolean isEncoder = 0;
   
   switch(motor)
   {
@@ -101,28 +88,24 @@ void activate(int motor, int value)
       break;
   }
   
-  if(isEncoder)
-  {
-    delta = normalize(getPosition(encoders[motor]) - destination);
-    
-    if(delta >= 0)
-    {
-      swerves[motor].ForwardM1(addresses[motor], map(delta, 0, 180, 0, 64));
-    }
-    else
-    {
-      swerves[motor].BackwardM1(addresses[motor], map(-1*delta, 0, 180, 0, 64));       
+  if(isEncoder) {
+    goals[motor] = (float(value)*3.1)+45;
+  } else {
+    if(value > 0) {
+      swerves.ForwardM2(addresses[motor], map(value, 0, 1000, 0, 127));
+    } else {
+      swerves.BackwardM2(addresses[motor], map(-1*value, 0, 1000, 0, 127)); 
     }
   }
-  else
-  {
-    if(value > 0)
-    {
-      swerves[motor].ForwardM2(addresses[motor], map(value, 0, 1000, 0, 64));
-    }
-    else
-    {
-      swerves[motor].BackwardM2(addresses[motor], map(-1*value, 0, 1000, 0, 64)); 
+  
+  for (int i = 0; i<4; i++) {  
+    delta = goals[i]-getPosition(encoders[i]);
+    if(delta > 5) {
+      swerves.ForwardM1(addresses[i], map(delta, 0, 360, 28, 127));
+    } else if (delta < 5) {
+      swerves.BackwardM1(addresses[i], map(-1*delta, 0, 360, 28, 127));       
+    } else {
+        swerves.ForwardM1(addresses[i], 0);
     }
   }
 }
@@ -133,10 +116,7 @@ void setup()
   pinMode(ENCODER_B_R, INPUT);
   pinMode(ENCODER_F_L, INPUT);
   pinMode(ENCODER_F_R, INPUT);
-  swerves[0] = RoboClaw(10, 11, 100); // Pin 10 on the Arduino connects to S2 on 10 and Pin 11 connects to S1 on the RoboClaw
-  //swerves[1] = RoboClaw(10, 11, 10000); 
-  //swerves[2] = RoboClaw(10, 11, 10000); 
-  //swerves[3] = RoboClaw(10, 11, 10000);
+  swerves = RoboClaw(10, 11, 100); // Pin 10 on the Arduino connects to S2 on 10 and Pin 11 connects to S1 on the RoboClaw
   
   encoders[0] = ENCODER_B_L;
   encoders[1] = ENCODER_B_R;
@@ -148,7 +128,12 @@ void setup()
   addresses[2] = ADDRESS_F_L;
   addresses[3] = ADDRESS_F_R;
   
-  swerves[0].begin(9600);
+  goals[0] = 0;
+  goals[1] = 0;
+  goals[2] = 0;
+  goals[3] = 0;
+  
+  swerves.begin(9600);
   Serial.begin(9600);
   Serial.setTimeout(100);
 }
@@ -165,10 +150,6 @@ void loop()
   
   flushBuffer();
   
-  
-  //if (strcmp(line, last) != 0) {
-    activate(values[MOTOR_ID], values[SPEED]);
-  //}
-  
-  //strlcpy(last, line,sizeof(last));
+  activate(values[MOTOR_ID], values[SPEED]);
+
 }
