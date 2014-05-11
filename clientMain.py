@@ -31,7 +31,7 @@ def main():
     controller_1.set_arm_mode()
 
     controller_2 = RobotController(1, control_side_in)
-    controller_2.set_drive_mode()
+    controller_2.set_tank_mode()
 
     gui_input_thread_id = start_new_thread(gui.read_inputs, ())
     controller_1_thread_id = start_new_thread(controller_1.update_loop, ())
