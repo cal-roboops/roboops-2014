@@ -17,9 +17,17 @@ def main():
     robot_side_out = Queue()
     robot_side_in = Queue()
 
-    r = motorManager(robot_side_in, robot_side_out, sys.argv[2], sys.argv[3])
+    try:
+        r = motorManager(robot_side_in, robot_side_out, sys.argv[2], sys.argv[3])
+    except:
+        r = motorManager(robot_side_in, robot_side_out, "", "")
+        print("No arduino specified. Running testing state.")
 
-    robServer = Server('0.0.0.0', int(sys.argv[1]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
+    try:
+        robServer = Server('0.0.0.0', int(sys.argv[1]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
+    except:
+        print("No port specified. Please specify the fucking port.")
+        return
 
     c = start_new_thread(r.read_inputs, ())
 
