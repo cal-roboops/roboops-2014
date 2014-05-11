@@ -19,6 +19,31 @@ COLOR_4 = "#6666ff"
 COLOR_5 = "#4444dd"
 COLOR_6 = "#000000"
 
+class RadioButtons(LabelFrame):
+    def __init__(self, parent, txt = "Undef, yo"):
+        LabelFrame.__init__(self, parent, text="",width=WIDTH//10)
+        self._var = IntVar()
+        self._var.set("0")
+        self._radios = []
+        self.config(bg=COLOR_0, bd=0,highlightbackground=COLOR_6,highlightthickness=2)
+        self.rows = 1
+
+        Label(self, text = txt, bg = COLOR_0, fg=COLOR_5).grid(row = 0, column = 0)
+
+    def set_grid(self, **kwargs):
+        self.grid(**kwargs)
+
+    def add_button(self, name, value):
+        n_radio = Radiobutton(self, text=name, variable=self._var, value=value,bg = COLOR_0, fg=COLOR_5,anchor=W,activebackground=COLOR_4,activeforeground=COLOR_6)
+        n_radio.grid(row = self.rows, column = 0, sticky=E+W)
+        self.rows += 1
+
+        self._radios.append(n_radio)
+        return n_radio
+
+    def get_value(self) :
+        return self._var.get()
+
 class Outputter(Frame):
     _rows = 0
 
@@ -172,6 +197,9 @@ class Gui():
         #for slider referencing
         self.slider_of_motor = {}
 
+        #radio for controllers
+        self.radio_buttons = RadioButtons(self.root, "Controller Modes")
+
         self.output_display = Outputter(self.root) #set output box
         self.output_display.set_grid_canvas(row=0,column=1,sticky=N+W+S,rowspan=5)
         self.output_display.set_grid_scroll(row=0,column=0,sticky=N+W+S,rowspan=5)
@@ -202,6 +230,8 @@ class Gui():
 
         self.sliders = Sliders(self.root, "Sensitivity Sliders")
         self.sliders.set_grid(row=0,column=6,rowspan=2,sticky=E+W+N+S)
+
+        self.radio_buttons.set_grid(row=0, column=7, sticky=E+W+N+S)
 
         self.active = True
 
@@ -255,6 +285,11 @@ class Gui():
         self.controller_readouts[AXIS][R_ANALOG_Y] = self.input_readout.add_label("R Analog Y", "0")
         self.controller_readouts[AXIS][R_ANALOG_X] = self.input_readout.add_label("R Analog X", "0")
         self.controller_readouts[AXIS][TRIGGER] = self.input_readout.add_label("Trigger", "0")
+
+        #populate drive modes
+        self.radio_buttons.add_button("TANK MODE", TANK_DRIVE)
+        self.radio_buttons.add_button("STRAFE MODE", STRAFE_DRIVE)
+        self.radio_buttons.add_button("PIVOT SPIN", PIVOT_SPIN)
 
     def gui_loop(self) :
         self.root.mainloop()

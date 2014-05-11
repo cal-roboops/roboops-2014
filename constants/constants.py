@@ -27,6 +27,7 @@ CAM_Y = 12
 #####################
 TANK_DRIVE = 0
 PIVOT_SPIN = 1
+STRAFE_DRIVE = 2
 
 TIMEOUT = .600 #in s
 
