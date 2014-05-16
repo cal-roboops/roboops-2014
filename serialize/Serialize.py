@@ -40,6 +40,24 @@ class Turn(Command):
     def run_gui(self, gui):
         print("outputting to gui: " + str(self.angle))
 
+class MotorHack(Command):
+    def __init__(self, number, speed):
+        self.number = number
+        self.speed = speed
+
+    def run_robot(self, robot):
+        print("Command received! Attempting to write to arduino")
+        robot.update_port(self.number, self.speed)
+        print("Command sent to arduino!")
+        #robot.queue_out.put(self.dump())
+        #print("Shit sent back! Success!")
+        
+    def run_gui(self, gui):
+        if gui:
+            gui.output("Motor Hack" + str(self.number) + " set to " + "{0:.2f}".format(self.speed))
+            gui.queue_out.put(Motor(self.number, self.speed).dump())
+            gui.update_readout(self.number, self.speed)
+
 class Motor(Command):
     def __init__(self, number, speed):
         self.number = number
