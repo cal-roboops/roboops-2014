@@ -64,38 +64,42 @@ class Controller():
 
 	def update_loop(self) :
 		while(self.is_active) :
+			self.update()
 
-			for event in pygame.event.get() :        
-				if event.type == pygame.JOYBUTTONDOWN :
-					for i in range(self.num_buttons) :
-						if self.controller.get_button(i) and not self.button_funcs[i][Controller.IS_DOWN] :
-							self.button_funcs[i][Controller.IS_DOWN] = 1
-							for f in self.button_funcs[i][Controller.DOWN] :
-								f()
-						elif self.controller.get_button(i):
-							for f in self.button_funcs[i][Controller.HOLD] :
-								f()
+			time.sleep(0.001)
 
-				if event.type == pygame.JOYBUTTONUP :
-					for i in range(self.controller.get_numbuttons()) :
-						if not self.controller.get_button(i) and self.button_funcs[i][Controller.IS_DOWN] :
-							self.button_funcs[i][Controller.IS_DOWN] = 0
-							for f in self.button_funcs[i][Controller.UP] :
-								f()
+	def update(self) :
+		for event in pygame.event.get() :
+			if event.type == pygame.JOYBUTTONDOWN :
+				for i in range(self.num_buttons) :
+					if self.controller.get_button(i) and not self.button_funcs[i][Controller.IS_DOWN] :
+						self.button_funcs[i][Controller.IS_DOWN] = 1
+						for f in self.button_funcs[i][Controller.DOWN] :
+							print("down!")
+							f()
+					elif self.controller.get_button(i):
+						for f in self.button_funcs[i][Controller.HOLD] :
+							f()
 
+			if event.type == pygame.JOYBUTTONUP :
+				for i in range(self.controller.get_numbuttons()) :
+					if not self.controller.get_button(i) and self.button_funcs[i][Controller.IS_DOWN] :
+						self.button_funcs[i][Controller.IS_DOWN] = 0
+						for f in self.button_funcs[i][Controller.UP] :
+							f()
 
-			for i in range(self.num_axes) :
-				if self.axis_funcs[i][Controller.AXIS_TIME_DELAY] < time.time():
-					for f in self.axis_funcs[i][Controller.AXIS_FUNC] :
-						f(self.controller.get_axis(i) if (abs(self.controller.get_axis(i)) > MIN_DETECTION) else 0)
-					self.axis_funcs[i][Controller.AXIS_TIME_DELAY] = time.time() + DELAY
-
+		for i in range(self.num_axes) :
+			if self.axis_funcs[i][Controller.AXIS_TIME_DELAY] < time.time():
+				for f in self.axis_funcs[i][Controller.AXIS_FUNC] :
+					f(self.controller.get_axis(i) if (abs(self.controller.get_axis(i)) > MIN_DETECTION) else 0)
+				self.axis_funcs[i][Controller.AXIS_TIME_DELAY] = time.time() + DELAY
+			
 			if i in range(self.num_hats) :
 				if self.hat_funcs[i][Controller.HAT_TIME_DELAY] < time.time():
 					for f in self.hat_funcs[i][Controller.HAT_FUNC] :
 						f(self.controller.get_hat(i) if (self.controller.get_hat(i) != (0,0)) else (0, 0))
 					self.hat_funcs[i][Controller.HAT_TIME_DELAY] = time.time() + DELAY
-			time.sleep(0.001)
+
 	def shut_off(self) :
 		self.is_active = False
 
@@ -106,6 +110,24 @@ class RobotController(Controller) :
 		Controller.__init__(self, id)
 
 		self.queue_out = queue_out
+		self.change_mode_bool = False
+		self.change_mode_func = None
+
+	def change_mode(self, func):
+		self.change_mode_bool = True
+		self.change_mode_func = func
+
+	def update_loop(self):
+		while(self.is_active) :
+			if self.change_mode_bool:
+				self.change_mode_func()
+
+				self.change_mode_bool = False
+				self.change_mode_func = None
+			else:
+				self.update()
+
+			time.sleep(0.001)
 
 	def set_arm_mode(self):
 
@@ -126,6 +148,10 @@ class RobotController(Controller) :
 
 		self.clear_funcs()
 
+		self.set_tank_orientation()
+
+		print("tank mode!")
+
 		self.pre_values = {}
 		self.pre_values[0] = None
 		self.pre_values[1] = None
@@ -145,13 +171,17 @@ class RobotController(Controller) :
 		self.bind_axis(L_ANALOG_Y, drive_left)
 		self.bind_axis(R_ANALOG_Y, drive_right)
 
-		self.bind_button(Y_BUTTON, self.set_tank_mode)
-		self.bind_button(B_BUTTON, self.set_spin_mode)
-		self.bind_button(X_BUTTON, self.set_strafe_mode)
+		self.bind_button_down(Y_BUTTON, self.change_mode(self.set_tank_mode))
+		self.bind_button_down(B_BUTTON, self.change_mode(self.set_spin_mode))
+		self.bind_button_down(X_BUTTON, self.change_mode(self.set_strafe_mode))
 
 	def set_spin_mode(self):
 
 		self.clear_funcs()
+
+		self.set_spin_orientation()
+
+		print("spin mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -164,15 +194,19 @@ class RobotController(Controller) :
 				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_X, LEFT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
 				self.pre_values[0] = magnitude
 
-		self.bind_axis(L_ANALOG_X, drive_left)
+		self.bind_axis(L_ANALOG_X, drive_wheel)
 
-		self.bind_button(Y_BUTTON, self.set_tank_mode)
-		self.bind_button(B_BUTTON, self.set_spin_mode)
-		self.bind_button(X_BUTTON, self.set_strafe_mode)
+		self.bind_button_down(Y_BUTTON, self.change_mode(self.set_tank_mode))
+		self.bind_button_down(B_BUTTON, self.change_mode(self.set_spin_mode))
+		self.bind_button_down(X_BUTTON, self.change_mode(self.set_strafe_mode))
 
 	def set_strafe_mode(self):
 
 		self.clear_funcs()
+
+		self.set_strafe_orientation()
+
+		print("strafe mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -185,11 +219,11 @@ class RobotController(Controller) :
 				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
 				self.pre_values[0] = magnitude
 
-		self.bind_axis(L_ANALOG_Y, drive_left)
+		self.bind_axis(L_ANALOG_Y, drive_wheel)
 
-		self.bind_button(Y_BUTTON, self.set_tank_mode)
-		self.bind_button(B_BUTTON, self.set_spin_mode)
-		self.bind_button(X_BUTTON, self.set_strafe_mode)
+		self.bind_button_down(Y_BUTTON, self.change_mode(self.set_tank_mode))
+		self.bind_button_down(B_BUTTON, self.change_mode(self.set_spin_mode))
+		self.bind_button_down(X_BUTTON, self.change_mode(self.set_strafe_mode))
 
 	def set_spin_orientation(self):
 
@@ -205,10 +239,14 @@ class RobotController(Controller) :
 
 	def set_all_swerves(self, number):
 
-		self.queue_out.put(Serialize.Motor(BACK_LEFT_SWERVE, number));
-		self.queue_out.put(Serialize.Motor(BACK_RIGHT_SWERVE, number));
-		self.queue_out.put(Serialize.Motor(FRONT_LEFT_SWERVE, number));
-		self.queue_out.put(Serialize.Motor(FRONT_RIGHT_SWERVE, number));
+		#print("Trying to set swerves")
+
+		for i in range(1):
+			self.queue_out.put(Serialize.MotorHack(BACK_LEFT_SWERVE, number).dump());
+			self.queue_out.put(Serialize.MotorHack(BACK_RIGHT_SWERVE, number).dump());
+			self.queue_out.put(Serialize.MotorHack(FRONT_LEFT_SWERVE, number).dump());
+			self.queue_out.put(Serialize.MotorHack(FRONT_RIGHT_SWERVE, number).dump());
+			#time.sleep(0.05)
 
 	def set_drive_mode(self):
 		"""
