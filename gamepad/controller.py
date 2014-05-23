@@ -66,7 +66,7 @@ class Controller():
 		while(self.is_active) :
 			self.update()
 
-			time.sleep(0.001)
+			#time.sleep(0.001)
 
 	def update(self) :
 		for event in pygame.event.get() :
@@ -75,13 +75,12 @@ class Controller():
 					if self.controller.get_button(i) and not self.button_funcs[i][Controller.IS_DOWN] :
 						self.button_funcs[i][Controller.IS_DOWN] = 1
 						for f in self.button_funcs[i][Controller.DOWN] :
-							print("down!")
 							f()
 					elif self.controller.get_button(i):
 						for f in self.button_funcs[i][Controller.HOLD] :
 							f()
 
-			if event.type == pygame.JOYBUTTONUP :
+			elif event.type == pygame.JOYBUTTONUP :
 				for i in range(self.controller.get_numbuttons()) :
 					if not self.controller.get_button(i) and self.button_funcs[i][Controller.IS_DOWN] :
 						self.button_funcs[i][Controller.IS_DOWN] = 0
@@ -94,11 +93,11 @@ class Controller():
 					f(self.controller.get_axis(i) if (abs(self.controller.get_axis(i)) > MIN_DETECTION) else 0)
 				self.axis_funcs[i][Controller.AXIS_TIME_DELAY] = time.time() + DELAY
 			
-			if i in range(self.num_hats) :
-				if self.hat_funcs[i][Controller.HAT_TIME_DELAY] < time.time():
-					for f in self.hat_funcs[i][Controller.HAT_FUNC] :
-						f(self.controller.get_hat(i) if (self.controller.get_hat(i) != (0,0)) else (0, 0))
-					self.hat_funcs[i][Controller.HAT_TIME_DELAY] = time.time() + DELAY
+		for i in range(self.num_hats) :
+			if self.hat_funcs[i][Controller.HAT_TIME_DELAY] < time.time():
+				for f in self.hat_funcs[i][Controller.HAT_FUNC] :
+					f(self.controller.get_hat(i) if (self.controller.get_hat(i) != (0,0)) else (0, 0))
+				self.hat_funcs[i][Controller.HAT_TIME_DELAY] = time.time() + DELAY
 
 	def shut_off(self) :
 		self.is_active = False
@@ -115,15 +114,17 @@ class RobotController(Controller) :
 
 	def change_mode(self, func):
 
-		def func():
+		def new_func():
+			#print("CHANGE MODE")
 			self.change_mode_bool = True
 			self.change_mode_func = func
 
-		return func
+		return new_func
 
 	def update_loop(self):
 		while(self.is_active) :
 			if self.change_mode_bool:
+				#print("CHANGING MODE")
 				self.change_mode_func()
 
 				self.change_mode_bool = False
@@ -154,7 +155,7 @@ class RobotController(Controller) :
 
 		self.set_tank_orientation()
 
-		print("tank mode!")
+		#print("tank mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -185,7 +186,7 @@ class RobotController(Controller) :
 
 		self.set_spin_orientation()
 
-		print("spin mode!")
+		#print("spin mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -210,7 +211,7 @@ class RobotController(Controller) :
 
 		self.set_strafe_orientation()
 
-		print("strafe mode!")
+		#print("strafe mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -245,12 +246,12 @@ class RobotController(Controller) :
 
 		#print("Trying to set swerves")
 
-		for i in range(1):
-			self.queue_out.put(Serialize.MotorHack(BACK_LEFT_SWERVE, number).dump());
-			self.queue_out.put(Serialize.MotorHack(BACK_RIGHT_SWERVE, number).dump());
-			self.queue_out.put(Serialize.MotorHack(FRONT_LEFT_SWERVE, number).dump());
-			self.queue_out.put(Serialize.MotorHack(FRONT_RIGHT_SWERVE, number).dump());
-			#time.sleep(0.05)
+		#for i in range(1):
+		self.queue_out.put(Serialize.MotorHack(BACK_LEFT_SWERVE, number).dump());
+		self.queue_out.put(Serialize.MotorHack(BACK_RIGHT_SWERVE, number).dump());
+		self.queue_out.put(Serialize.MotorHack(FRONT_LEFT_SWERVE, number).dump());
+		self.queue_out.put(Serialize.MotorHack(FRONT_RIGHT_SWERVE, number).dump());
+		#time.sleep(0.05)
 
 	def set_drive_mode(self):
 		"""
