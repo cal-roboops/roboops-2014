@@ -64,7 +64,10 @@ class Controller():
 
 	def update_loop(self) :
 		while(self.is_active) :
-			self.update()
+			try:
+				self.update()
+			except Exception as e:
+				print(e)
 
 			#time.sleep(0.001)
 
