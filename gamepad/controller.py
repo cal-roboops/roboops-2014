@@ -114,8 +114,12 @@ class RobotController(Controller) :
 		self.change_mode_func = None
 
 	def change_mode(self, func):
-		self.change_mode_bool = True
-		self.change_mode_func = func
+
+		def func():
+			self.change_mode_bool = True
+			self.change_mode_func = func
+
+		return func
 
 	def update_loop(self):
 		while(self.is_active) :
