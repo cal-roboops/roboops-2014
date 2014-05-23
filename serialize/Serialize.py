@@ -54,7 +54,7 @@ class MotorHack(Command):
         
     def run_gui(self, gui):
         if gui:
-            gui.output("Motor Hack" + str(self.number) + " set to " + "{0:.2f}".format(self.speed))
+            #gui.output("Motor Hack" + str(self.number) + " set to " + "{0:.2f}".format(self.speed))
             gui.queue_out.put(Motor(self.number, self.speed).dump())
             gui.update_readout(self.number, self.speed)
 
@@ -72,7 +72,7 @@ class Motor(Command):
         
     def run_gui(self, gui):
         if gui:
-            gui.output("Motor " + str(self.number) + " set to " + "{0:.2f}".format(self.speed))
+            #gui.output("Motor " + str(self.number) + " set to " + "{0:.2f}".format(self.speed))
             gui.update_readout(self.number, self.speed)
 
 #created by controller, sent to GUI to process and add slider multiplier
@@ -92,7 +92,7 @@ class RawMotor(Command):
         if gui:
             gui.update_controller(self.type, self.button, self.speed)
             gui.queue_out.put(Motor(self.number, self.speed*gui.slider_of_motor[self.slider].get()).dump())
-            gui.output("Controller reading: " + str(self.number) + " for " + "{0:.2f}".format(self.speed))
+            #gui.output("Controller reading: " + str(self.number) + " for " + "{0:.2f}".format(self.speed))
         
 if __name__ == "__main__":
     # command is created from the user side
