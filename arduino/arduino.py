@@ -13,9 +13,15 @@ class Arduino:
 		try :
 			self.serial = serial.Serial(port, 9600)
 			self.active = True
-		except serial.SerialException:
-			self.serial = None
-			self.active = False
+		except serial.SerialException as e:
+			try:
+				self.serial = serial.Serial(int(port), 9600)
+				self.active = True
+			except:
+				print("Arduino for port " + port + " failed")
+				print(e)
+				self.serial = None
+				self.active = False
 
 	def write(self, message):
 		self.serial.write(message)
