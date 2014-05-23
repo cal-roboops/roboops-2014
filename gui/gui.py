@@ -301,7 +301,7 @@ class Gui():
                 Serialize.run_gui(a, self)
             except Exception as ex:
                 print(type(ex).__name__, ex.args)
-            sleep(0.001)
+            #sleep(0.001)
 
     def update_readout(self, motor, value):
         #self.readouts[motor].update_label(local_names[motor], str(value))]
@@ -311,7 +311,8 @@ class Gui():
         self.controller_readouts[type][button].set("{0:.2f}".format(value))
 
     def output(self, string):
-        self.output_display.add_line(string)
+        #self.output_display.add_line(string)
+        pass
 
     def is_active(self) :
         return self.active
