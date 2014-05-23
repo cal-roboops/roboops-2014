@@ -21,7 +21,7 @@ def main():
         r = motorManager(robot_side_in, robot_side_out, sys.argv[2], sys.argv[3])
     except:
         r = motorManager(robot_side_in, robot_side_out, "", "")
-        print("No arduino specified. Running testing state.")
+        print("No arduino specified. Running testing state. It goes 'arm controller' 'drive controller'")
 
     try:
         robServer = Server('0.0.0.0', int(sys.argv[1]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
