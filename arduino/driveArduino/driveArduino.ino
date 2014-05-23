@@ -75,9 +75,8 @@ double getPosition(int pin)
 }
 
 
-void activate(int motor, int value)
+void set(int motor, int value)
 {
-  float delta;
   boolean isEncoder = 0;
   
   switch(motor)
@@ -85,6 +84,19 @@ void activate(int motor, int value)
     case 6:
       motor=0;
       isEncoder = 1;
+      break;
+      
+    case 7:
+      motor=1;
+      isEncoder = 1;
+      break;
+    case 2:
+      motor=0;
+      isEncoder = 0;
+      break;
+    case 3:
+      motor=1;
+      isEncoder = 0;
       break;
   }
   
@@ -97,15 +109,20 @@ void activate(int motor, int value)
       swerves.BackwardM2(addresses[motor], map(-1*value, 0, 1000, 0, 127)); 
     }
   }
-  
-  for (int i = 0; i<4; i++) {  
+}
+
+void activate() {
+  float delta;
+  for (int i = 0; i<2; i++) {  
     delta = goals[i]-getPosition(encoders[i]);
+
+    //Serial.println(addresses[i]);
     if(delta > 5) {
-      swerves.ForwardM1(addresses[i], map(delta, 0, 360, 28, 127));
+      swerves.ForwardM1(0x80+i, map(delta, 0, 360, 10, 127));
     } else if (delta < 5) {
-      swerves.BackwardM1(addresses[i], map(-1*delta, 0, 360, 28, 127));       
+      swerves.BackwardM1(0x80+i, map(-1*delta, 0, 360, 10, 127));       
     } else {
-        swerves.ForwardM1(addresses[i], 0);
+        swerves.ForwardM1(0x80+i, 0);
     }
   }
 }
@@ -127,11 +144,12 @@ void setup()
   addresses[1] = ADDRESS_B_R;
   addresses[2] = ADDRESS_F_L;
   addresses[3] = ADDRESS_F_R;
+
   
-  goals[0] = 0;
-  goals[1] = 0;
-  goals[2] = 0;
-  goals[3] = 0;
+  goals[0] = 45;
+  goals[1] = 45;
+  goals[2] = 45;
+  goals[3] = 45;
   
   swerves.begin(9600);
   Serial.begin(9600);
@@ -142,14 +160,17 @@ void loop()
 {
   Serial.flush();
   delay(10);
+  activate();
   readLine(line);
   Serial.println(line);
   Serial.flush();
   delay(10);
+  activate();
   parseLine(line);
   
   flushBuffer();
   
-  activate(values[MOTOR_ID], values[SPEED]);
+  set(values[MOTOR_ID], values[SPEED]);
+  activate();
 
 }
