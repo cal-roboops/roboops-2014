@@ -15,6 +15,32 @@
 #define MAXSHOUL 500
 #define MINROT 100
 #define MAXROT 500
+
+#define SHOULDER_HORIZONTAL 8
+#define SHOULDER_VERTICAL 9
+#define ELBOW 10
+#define CLAW 13
+
+#define SHOULDER_HORIZONTAL_INDEX 3
+#define SHOULDER_VERTICAL_INDEX 1
+#define ELBOW_INDEX 0
+#define CLAW_INDEX 2
+
+#define SHOULDER_HORIZONTAL_PWM 9
+#define SHOULDER_VERTICAL_PWN 5
+#define ELBOW_PWM 3
+#define CLAW_PWM 6
+
+#define SHOULDER_HORIZONTAL_DIR 8
+#define SHOULDER_VERTICAL_DIR 4
+#define ELBOW_DIR 2
+#define CLAW_DIR 7
+
+#define SHOULDER_HORIZONTAL_PONT A3
+#define SHOULDER_VERTICAL_PONT A1
+#define ELBOW_PONT A0
+#define CLAW_DIR A2
+
 // stores the interpreted values from parsing
 int values[2];
 
@@ -75,39 +101,51 @@ void parseLine(char *line)
 
 void flushBuffer()
 {
-  while (Serial.available()) {
+  while (Serial.available())
+  {
     Serial.read();
   }
 }
 
-void arm(int motor, int spd) {
-  switch(motor) {
-    case 13:
-      motor=2;
+void arm(int motor, int spd)
+{
+  switch(motor)
+  {
+    case CLAW:
+      motor=CLAW_INDEX;
       break;
-    case 10:
-      motor=0;
+    case ELBOW:
+      motor=ELBOW_INDEX;
       break;
-    case 9:
-      motor=1;
+    case SHOULDER_HORIZONTAL:
+      motor=SHOULDER_HORIZONTAL_INDEX;
       break;
-    case 8:
-      motor=3;
+    case SHOULDER_VERTICAL:
+      motor=SHOULDER_VERTICAL_INDEX;
   }
-  if (spd<0) {
+  if (spd<0)
+  {
     digitalWrite(dirPins[motor], 1);
-    if (dirLock[motor] && dirState[motor]==1) {
+    if (dirLock[motor] && dirState[motor]==1)
+    {
       spd = 0;
-    } else {
+    }
+    else
+    {
       spd = -spd;
       dirLock[motor] = 0;
     }
     dirState[motor] = 1;
-  } else {
+  }
+  else
+  {
     digitalWrite(dirPins[motor], 0);
-    if (dirLock[motor] && dirState[motor]==0) {
+    if (dirLock[motor] && dirState[motor]==0)
+    {
       spd = 0;
-    } else {
+    }
+    else
+    {
       dirLock[motor] = 0;
     }
     dirState[motor] = 0;
@@ -117,77 +155,84 @@ void arm(int motor, int spd) {
   analogWrite(pwmPins[motor], a);
 }
 
-void checkArm() {
-  int pot = analogRead(A0);
+void checkArm()
+{
+  int pot = analogRead(ELBOW_PONT);
 //  Serial.print("Position: ");
 //  Serial.println(pot);
   
-  if ((pot < MINELBOW && dirState[0]) || (pot > MAXELBOW && !dirState[0])) {
-    dirLock[0] = 1;
-    analogWrite(pwmPins[0], 0);
+  if ((pot < MINELBOW && dirState[ELBOW_INDEX]) || (pot > MAXELBOW && !dirState[ELBOW_INDEX]))
+  {
+    dirLock[ELBOW_INDEX] = 1;
+    analogWrite(pwmPins[ELBOW_INDEX], 0);
   }
-  pot = analogRead(A1);
-  if ((pot < MINSHOUL && dirState[1]) || (pot > MAXSHOUL && !dirState[1])) {
-     dirLock[1] = 1;
-    analogWrite(pwmPins[1], 0);
+  pot = analogRead(SHOULDER_VERTICAL_PONT);
+  if ((pot < MINSHOUL && dirState[SHOULDER_VERTICAL_INDEX]) || (pot > MAXSHOUL && !dirState[SHOULDER_VERTICAL_INDEX]))
+  {
+    dirLock[SHOULDER_VERTICAL_INDEX] = 1;
+    analogWrite(pwmPins[SHOULDER_VERTICAL_INDEX], 0);
   }
-  pot = analogRead(A2);
-  if ((pot < MINCLAW && dirState[2]) || (pot > MAXCLAW && !dirState[2])) {
-     dirLock[2] = 1;
-    analogWrite(pwmPins[2], 0);
+  pot = analogRead(CLAW_PONT);
+  if ((pot < MINCLAW && dirState[CLAW_INDEX]) || (pot > MAXCLAW && !dirState[CLAW_INDEX]))
+  {
+    dirLock[CLAW_INDEX] = 1;
+    analogWrite(pwmPins[CLAW_INDEX], 0);
   }
-  pot = analogRead(A3);
-  if ((pot < MINROT && dirState[3]) || (pot > MAXROT && !dirState[3])) {
-     dirLock[3] = 1;
-    analogWrite(pwmPins[3], 0);
+  pot = analogRead(SHOULDER_HORIZONTAL_PONT);
+  if ((pot < MINROT && dirState[SHOULDER_HORIZONTAL_INDEX]) || (pot > MAXROT && !dirState[SHOULDER_HORIZONTAL_INDEX]))
+  {
+    dirLock[SHOULDER_HORIZONTAL_PWM] = 1;
+    analogWrite(pwmPins[SHOULDER_HORIZONTAL_INDEX], 0);
   }
 }
 
-void setup() {
+void setup()
+{
   // initialize both serial ports:
   Serial.flush();
   delay(10);
   motorChar[2] = '\0';
   valuesChar[3] = '\0';
   line[9] = '\0';
-  pwmPins[0] = 3;
-  pwmPins[1] = 5;
-  pwmPins[2] = 6;
-  pwmPins[3] = 9;
-  dirPins[0] = 2;
-  dirPins[1] = 4;
-  dirPins[2] = 7;
-  dirPins[3] = 8;
-  dirState[0] = 0;
-  dirState[1] = 0;
-  dirState[2] = 0;
-  dirState[3] = 0;
-  dirLock[0] = 0;
-  dirLock[1] = 0;
-  dirLock[2] = 0;
-  dirLock[3] = 0;
+  pwmPins[SHOULDER_HORIZONTAL_INDEX] = SHOULDER_HORIZONTAL_PWM;
+  pwmPins[SHOULDER_VERTICAL_INDEX] = SHOULDER_VERTICAL_PWM;
+  pwmPins[ELBOW_INDEX] = ELBOW_PWM;
+  pwmPins[CLAW_INDEX] = CLAW_PWM;
+  dirPins[SHOULDER_HORIZONTAL_INDEX] = SHOULDER_HORIZONTAL_DIR;
+  dirPins[SHOULDER_VERTICAL_INDEX] = SHOULDER_VERTICAL_DIR;
+  dirPins[ELBOW_INDEX] = ELBOW_DIR;
+  dirPins[CLAW_INDEX] = CLAW_DIR;
+  dirState[SHOULDER_HORIZONTAL_INDEX] = 0;
+  dirState[SHOULDER_VERTICAL_INDEX] = 0;
+  dirState[ELBOW_INDEX] = 0;
+  dirState[CLAW_INDEX] = 0;
+  dirLock[SHOULDER_HORIZONTAL_INDEX] = 0;
+  dirLock[SHOULDER_VERTICAL_INDEX] = 0;
+  dirLock[ELBOW_INDEX] = 0;
+  dirLock[CLAW_INDEX] = 0;
   
-  analogWrite(pwmPins[0], 0);
-  analogWrite(pwmPins[1], 0);
-  analogWrite(pwmPins[2], 0);
-  analogWrite(pwmPins[3], 0);
+  analogWrite(pwmPins[SHOULDER_HORIZONTAL_INDEX], 0);
+  analogWrite(pwmPins[SHOULDER_VERTICAL_INDEX], 0);
+  analogWrite(pwmPins[ELBOW_INDEX], 0);
+  analogWrite(pwmPins[CLAW_INDEX], 0);
   
   Serial.begin(9600);
   Serial.setTimeout(100);
   
   
-  pinMode(2, OUTPUT);
-  pinMode(3, OUTPUT);
-  pinMode(4, OUTPUT);
-  pinMode(5, OUTPUT);
-  pinMode(6, OUTPUT);
-  pinMode(7, OUTPUT);
-  pinMode(8, OUTPUT);
-  
+  pinMode(SHOULDER_HORIZONTAL_PWM, OUTPUT);
+  pinMode(SHOULDER_VERTICAL_PWM, OUTPUT);
+  pinMode(ELBOW_PWM, OUTPUT);
+  pinMode(CLAW_PWM, OUTPUT);
+  pinMode(SHOULDER_HORIZONTAL_DIR, OUTPUT);
+  pinMode(SHOULDER_VERTICAL_DIR, OUTPUT);
+  pinMode(ELBOW_DIR, OUTPUT);
+  pinMode(CLAW_DIR, OUTPUT);  
 }
 
 
-void loop() {
+void loop()
+{
   // read from port 1, send to port 0:
   Serial.flush();
   
