@@ -13,7 +13,7 @@ class Arduino:
 		try :
 			self.serial = serial.Serial(port, 9600)
 			self.active = True
-		except serial.SerialException as e:
+		except Exception as e:
 			try:
 				self.serial = serial.Serial(int(port), 9600)
 				self.active = True
