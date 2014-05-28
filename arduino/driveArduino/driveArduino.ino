@@ -174,7 +174,7 @@ void set(int motor, int value)
 }
 
 // drives motors
-void drive(int motorIndex, int speed)
+void drive(int motorIndex, int value)
 {
   if(value > 0)
   {
