@@ -14,20 +14,19 @@ import sys
 
 def main():
     """
-    1 = ip
-    2 = port
+    1 = port
     """
     control_side_out = Queue()
     control_side_in = Queue()
 
     try:
-        conClient = Client(sys.argv[1], int(sys.argv[2]), lambda : control_side_out.get(block=True, timeout=1), control_side_in.put)
+        conClient = Server('0.0.0.0', int(sys.argv[1]), lambda : control_side_out.get(block=True, timeout=1), control_side_in.put)
     except:
         print("Please specifiy ip address and port.")
         return
 
     gui = Gui(control_side_in, control_side_out)
-    controller_1 = RobotController(0, control_side_in)
+    ontroller_1 = RobotController(0, control_side_in)
     controller_1.set_arm_mode()
 
     controller_2 = RobotController(1, control_side_in)

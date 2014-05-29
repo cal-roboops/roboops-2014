@@ -8,9 +8,10 @@ from serialize import Serialize
 import sys
 
 """
-    First argument is port
-    Second argument is port of arm controller
-    Third argument is port of drive controller
+    1 is ip
+    2 argument is port
+    3 argument is port of arm controller
+    4 argument is port of drive controller
 """
 
 def main():
@@ -18,13 +19,13 @@ def main():
     robot_side_in = Queue()
 
     try:
-        r = motorManager(robot_side_in, robot_side_out, sys.argv[2], sys.argv[3])
+        r = motorManager(robot_side_in, robot_side_out, sys.argv[3], sys.argv[4])
     except:
         r = motorManager(robot_side_in, robot_side_out, "", "")
         print("No arduino specified. Running testing state. It goes 'arm controller' 'drive controller'")
 
     try:
-        robServer = Server('0.0.0.0', int(sys.argv[1]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
+        robServer = Client(sys.argv[1], int(sys.argv[2]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
     except:
         print("No port specified. Please specify the fucking port.")
         return
