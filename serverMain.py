@@ -1,47 +1,48 @@
+from gui.gui import *
+from gui.KeyManager import *
 from robot.command import *
 from thread import *
 from Queue import Queue
+from gamepad.controller import RobotController
 from socketEndpoint import Server, Client
 
 from serialize import Serialize
 
+from constants.constants import *
+
 import sys
 
-"""
-    1 is ip
-    2 argument is port
-    3 argument is port of arm controller
-    4 argument is port of drive controller
-"""
-
 def main():
-    robot_side_out = Queue()
-    robot_side_in = Queue()
+    """
+    1 = port
+    """
+    control_side_out = Queue()
+    control_side_in = Queue()
 
     try:
-        r = motorManager(robot_side_in, robot_side_out, sys.argv[3], sys.argv[4])
+        conClient = Server('0.0.0.0', int(sys.argv[1]), lambda : control_side_out.get(block=True, timeout=1), control_side_in.put)
     except:
-        r = motorManager(robot_side_in, robot_side_out, "", "")
-        print("No arduino specified. Running testing state. It goes 'arm controller' 'drive controller'")
-
-    try:
-        robServer = Client(sys.argv[1], int(sys.argv[2]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
-    except:
-        print("No port specified. Please specify the fucking port.")
+        print("Please specifiy ip address and port.")
         return
 
-    c = start_new_thread(r.read_inputs, ())
+    gui = Gui(control_side_in, control_side_out)
+    ontroller_1 = RobotController(0, control_side_in)
+    controller_1.set_arm_mode()
 
-    robServer.start()
+    controller_2 = RobotController(1, control_side_in)
+    controller_2.set_tank_mode()
 
-    while(robServer.isOn):
-        pass
-        sleep(0.001)
+    gui_input_thread_id = start_new_thread(gui.read_inputs, ())
+    controller_1_thread_id = start_new_thread(controller_1.update_loop, ())
+    controller_2_thread_id = start_new_thread(controller_2.update_loop, ())
+    conClient.start()
+    gui_thread_id = gui.gui_loop()
 
-    r.shut_off()
-    robServer.close()
+    controller_1.shut_off()
+    controller_2.shut_off()
+    conClient.close()
 
-    print("Robot communications has exited.")
+    print("Command center has exited.")
 
 if __name__ == '__main__':
-    main();
+    main()
