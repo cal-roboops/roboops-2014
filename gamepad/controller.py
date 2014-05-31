@@ -164,7 +164,7 @@ class RobotController(Controller) :
 		self.pre_values[0] = None
 		self.pre_values[1] = None
 
-		self.pre_values['swerve'] = int(45*3.1 + 20)
+		self.pre_values['swerve'] = 45
 		self.pre_values['pan'] = 90
 
 		def drive_left(magnitude) :
@@ -181,6 +181,7 @@ class RobotController(Controller) :
 
 		def swerve_shift(magnitude) :
 			self.pre_values['swerve'] += magnitude
+			self.pre_values = 0 if self.pre_values['swerve'] < 0 else (90 if self.pre_values['swerve'] > 90 else self.pre_values['swerve'])
 
 			self.set_all_swerves(self.pre_values['swerve'])
 
@@ -192,6 +193,7 @@ class RobotController(Controller) :
 
 		def pan_camera(magnitude) :
 			self.pre_values['pan'] += 10 if magnitude > 0 else -10
+			self.pre_values['pan'] = 0 if self.pre_values['swerve'] < 0 else (90 if self.pre_values['swerve'] > 90 else self.pre_values['swerve'])
 			self.queue_out.put(Serialize.MotorHack(CAM_X, self.pre_values['pan']))
 
 		self.bind_axis(L_ANALOG_Y, drive_left)
@@ -201,6 +203,9 @@ class RobotController(Controller) :
 
 		self.bind_button_down(Y_BUTTON, deploy_camera)
 		self.bind_button_down(B_BUTTON, close_camera)
+
+		self.bind_button_down(LEFT_BUTTON, lambda : swerve_shift(-5))
+		self.bind_button_down(RIGHT_BUTTON, lambda : swerve_shift(5))
 
 	def set_tank_mode(self):
 
