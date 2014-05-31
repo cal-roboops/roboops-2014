@@ -184,7 +184,7 @@ void arm(int motor, int spd)
       panCamera(spd);
       return;
     case CAM_Y:
-      if(mastOpened)
+      if(spd == 0)
       {
         mastOpened = 0;
         closeCamera();
