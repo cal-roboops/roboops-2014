@@ -92,7 +92,7 @@ void setup()
 
   swerves.begin(9600);
   Serial.begin(9600);
-  //Serial.setTimeout(100);
+  Serial.setTimeout(10);
 }
 
 /* Read a whole line in serial console, wait if the serial is not available */
@@ -221,7 +221,7 @@ void drive(int motor, int value)
 void setAllSwerves()
 {
   float delta;
-  
+  /*
   delta = int(goals[SWERVE_M1_INDEX] - getPosition(encoders[SWERVE_M1_INDEX]));
   if(delta > 10 || delta < 10)
   {
@@ -240,20 +240,20 @@ void setAllSwerves()
   else
   {
     setRoboClaw(2, ADDRESS_SWERVE, 0); 
-  }
+  }*/
 }
 
 void loop()
 {
-  setAllSwerves();
+  //setAllSwerves();
   while(readLine(line))
   {
     Serial.println(line);
-    parseLine(line);
-    set(values[MOTOR_ID], values[SPEED]);
+    //parseLine(line);
+    //set(values[MOTOR_ID], values[SPEED]);
     setAllSwerves();
   }
   Serial.println(getPosition(encoders[2]));
-  setAllSwerves();
+  //setAllSwerves();
 }
 
