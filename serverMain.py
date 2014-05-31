@@ -26,7 +26,7 @@ def main():
         return
 
     gui = Gui(control_side_in, control_side_out)
-    ontroller_1 = RobotController(0, control_side_in)
+    controller_1 = RobotController(0, control_side_in)
     controller_1.set_arm_mode()
 
     controller_2 = RobotController(1, control_side_in)

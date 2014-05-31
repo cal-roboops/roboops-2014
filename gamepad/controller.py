@@ -158,7 +158,7 @@ class RobotController(Controller) :
 
 		self.set_tank_orientation()
 
-		#print("tank mode!")
+		print("tank mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -189,7 +189,7 @@ class RobotController(Controller) :
 
 		self.set_spin_orientation()
 
-		#print("spin mode!")
+		print("spin mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -214,7 +214,7 @@ class RobotController(Controller) :
 
 		self.set_strafe_orientation()
 
-		#print("strafe mode!")
+		print("strafe mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -235,11 +235,11 @@ class RobotController(Controller) :
 
 	def set_spin_orientation(self):
 
-		self.set_all_swerves(45);
+		self.set_all_swerves(0);
 
 	def set_tank_orientation(self):
 
-		self.set_all_swerves(0);
+		self.set_all_swerves(45);
 
 	def set_strafe_orientation(self):
 

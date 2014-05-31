@@ -27,19 +27,19 @@
 #define CLAW_INDEX 2
 
 #define SHOULDER_HORIZONTAL_PWM 9
-#define SHOULDER_VERTICAL_PWN 5
+#define SHOULDER_VERTICAL_PWM 10
 #define ELBOW_PWM 3
 #define CLAW_PWM 6
 
 #define SHOULDER_HORIZONTAL_DIR 8
-#define SHOULDER_VERTICAL_DIR 4
+#define SHOULDER_VERTICAL_DIR 11
 #define ELBOW_DIR 2
 #define CLAW_DIR 7
 
 #define SHOULDER_HORIZONTAL_PONT A3
 #define SHOULDER_VERTICAL_PONT A1
 #define ELBOW_PONT A0
-#define CLAW_DIR A2
+#define CLAW_PONT A2
 
 // stores the interpreted values from parsing
 int values[2];
