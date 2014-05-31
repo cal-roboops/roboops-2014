@@ -14,8 +14,8 @@
 #define ADDRESS_F_R 0x83
 
 #define ENCODER_B_L 2
-#define ENCODER_B_R 3
-#define ENCODER_F_L 4
+#define ENCODER_B_R 4
+#define ENCODER_F_L 3
 #define ENCODER_F_R 5
 
 #define B_L_INDEX 0
@@ -39,7 +39,11 @@ int encoders[4]; //0, 1, 2, 3: same as swerves
 char addresses[4];
 
 int values[2];
-int goals[4];
+int goals[4]; //goals for servos
+int initial[4]; //initial positions for servos
+int prevDir[4]; // previous direction for servos
+int overShot[4]; // counts of how many times overshot
+int additive[4]; // hotfix to add power slightly
 
 const int MOTOR_ID = 0,
           SPEED = 1;
@@ -71,20 +75,26 @@ void setup()
   addresses[F_L_INDEX] = ADDRESS_F_L;
   addresses[F_R_INDEX] = ADDRESS_F_R;
   
-  goals[0] = 45;
-  goals[1] = 45;
-  goals[2] = 45;
-  goals[3] = 45;
+  for(int i = 0; i < 4; i++)
+  {
+    goals[i] = 20;
+    overShot[i] = 0;
+    prevDir[i] = 0;
+    additive[i] = 0;
+    //initial[i] = getPosition(encoders[i]); 
+  }
   
+  initial[2] = 0;
+
   swerves.begin(9600);
   Serial.begin(9600);
   Serial.setTimeout(100);
 }
 
 /* Read a whole line in serial console, wait if the serial is not available */
-void readLine(char* dist)
+boolean readLine(char* dist)
 {
-  Serial.readBytesUntil('!', dist, 9);
+  return Serial.readBytesUntil('!', dist, 9);
 } 
 
 
@@ -165,7 +175,10 @@ void set(int motor, int value)
   
   if(isEncoder)
   {
-    goals[index] = (float(value)*3.1)+45;
+    goals[index] = (float(value)*3.1) + 20;
+    Serial.print("Set to ");
+    Serial.println(goals[index]);
+    overShot[index] = 0;
   }
   else
   {
@@ -176,13 +189,15 @@ void set(int motor, int value)
 // drives motors
 void drive(int motorIndex, int value)
 {
+  //Serial.println("Driving!");
+  //Serial.println(addresses[motorIndex]);
   if(value > 0)
   {
     swerves.ForwardM2(addresses[motorIndex], map(value, 0, 1000, 0, 127)); 
   }
   else
   {
-    swerves.BackwardM2(addresses[motorIndex], map(value, 0, 1000, 0, 127)); 
+    swerves.BackwardM2(addresses[motorIndex], map(-1*value, 0, 1000, 0, 127)); 
   }
 }
 
@@ -191,39 +206,100 @@ void setAllSwerves()
 {
   float delta;
   for (int i = 0; i<4; i++)
-  {  
-    delta = goals[i]-getPosition(encoders[i]);
+  {
+    delta = int(goals[i] + int(initial[i] - getPosition(encoders[i]))%360);
+    //delta = delta > 180 ? -(delta - 180) : (delta < -180 ? -(delta + 180) : delta);
+    if(i==2)
+    {
+      Serial.print("Goal : ");
+      Serial.println(goals[i]);
+      Serial.print("Position : ");
+      Serial.println(getPosition(encoders[i]));
+      Serial.print("Initial : ");
+      Serial.println(initial[i]);
+      Serial.println(delta);
+    }
 
     //Serial.println(addresses[i]);
-    if(delta > 5)
+    if(delta > 10)
     {
-      swerves.ForwardM1(addresses[i], map(delta, 0, 360, 10, 127));
+      swerves.ForwardM1(addresses[i], map(delta, 0, 360, 40, 80));      
     }
-    else if (delta < 5)
+    else if(delta < -10)
     {
-      swerves.BackwardM1(addresses[i], map(-1*delta, 0, 360, 10, 127));       
+      swerves.BackwardM1(addresses[i], map(delta, 0, 360, 40, 80));
     }
     else
     {
+     swerves.ForwardM1(addresses[i], 0); 
+    }
+    /*
+    if(delta > 10 || delta < -10)
+    {
+      if(delta > 0)
+      {
+        if(prevDir[i] == -1)
+        {
+          overShot[i] += 0;
+          additive[i] = 0; 
+        }
+        else
+        {
+          additive[i] += 0;
+        }
+        swerves.BackwardM1(addresses[i], int(additive[i] + map(delta/(overShot[i] + 1), 0, 360, 40, 80)));//+ 50/(overShot[i] + 1)));//map(delta/(overShot[i] + 1), 0, 360, 20, 127));
+        if(i==2)
+        {
+          Serial.print("Moving forward at ");
+          Serial.println(int(additive[i] + map(delta/(overShot[i] + 1), 0, 360, 40, 80)));//int(additive[i] + 50/(overShot[i] + 1)));//map(delta/(overShot[i] + 1), 0, 360, 20, 127));
+        }
+        prevDir[i] = 1;
+      }
+      else if (delta < 0)
+      {
+        if(prevDir[i] == 1)
+        {
+          overShot[i] += 0;
+          additive[i] = 0;
+        }
+        else
+        {
+          additive[i] += 0;
+        }
+        swerves.ForwardM1(addresses[i], int(additive[i] +map(-1*delta/(overShot[i] + 1), 0, 360, 40, 80)));//+ 50/(overShot[i] + 1)));//map(-1*delta/(overShot[i] + 1), 0, 360, 20, 127));
+        if(i==2)
+         { 
+          Serial.print("Moving backward at ");
+          Serial.println(int(additive[i] +map(-1*delta/(overShot[i] + 1), 0, 360, 40, 80)));//int(additive[i] + 50/(overShot[i] + 1)));//map(-1*delta/(overShot[i] + 1), 0, 360, 20, 127));
+          
+          Serial.print(delta); Serial.println(" is less than -10.");
+         }
+        prevDir[i] = -1;
+      }
+    }
+    else
+    {
+      overShot[i] = 0;
+      additive[i] = 0;
       swerves.ForwardM1(addresses[i], 0);
     }
-  }
+  }*/
 }
 
 void loop()
 {
-  Serial.flush();
+  setAllSwerves();
+  while(readLine(line))
+  {
+    Serial.println(line);
+    parseLine(line);
+    set(values[MOTOR_ID], values[SPEED]);
+    setAllSwerves();
+  }
+  Serial.println(getPosition(encoders[2]));
+  setAllSwerves();
+  /*
+  Serial.println(getPosition(encoders[2]));
   delay(10);
-  setAllSwerves();
-  readLine(line);
-  Serial.println(line);
-  Serial.flush();
-  delay(10);
-  setAllSwerves();
-  parseLine(line);
-  
-  flushBuffer();
-  
-  set(values[MOTOR_ID], values[SPEED]);
-  setAllSwerves();
+  /*/
 }
