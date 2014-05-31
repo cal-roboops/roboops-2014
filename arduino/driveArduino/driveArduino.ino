@@ -87,7 +87,7 @@ void setup()
   
   for(int i = 0; i < 4; i++)
   {
-    goals[i] = 20;
+    goals[i] = 20 + int(float(45*3.1));
   }
 
   swerves.begin(9600);
@@ -175,22 +175,22 @@ void setRoboClaw(int id, int address, int value, int minInp, int maxInp, int min
   {
     if(value > 0)
     {
-      swerves.ForwardM1(address, map(value, minInp, maxInp, minVal, maxVal));
+      swerves.BackwardM1(address, map(value, minInp, maxInp, minVal, maxVal));
     }
     else
     {
-      swerves.BackwardM1(address, map(-1*value, minInp, maxInp, minVal, maxVal));
+      swerves.ForwardM1(address, map(-1*value, minInp, maxInp, minVal, maxVal));
     }
   }
   else
   {
     if(value > 0)
     {
-      swerves.ForwardM2(address, map(value, minInp, maxInp, minVal, maxVal));
+      swerves.BackwardM2(address, map(value, minInp, maxInp, minVal, maxVal));
     }
     else
     {
-      swerves.BackwardM2(address, map(-1*value, minInp, maxInp, minVal, maxVal));
+      swerves.ForwardM2(address, map(-1*value, minInp, maxInp, minVal, maxVal));
     }
   }
 }
@@ -221,11 +221,12 @@ void drive(int motor, int value)
 void setAllSwerves()
 {
   float delta;
-  /*
+
   delta = int(goals[SWERVE_M1_INDEX] - getPosition(encoders[SWERVE_M1_INDEX]));
+  Serial.println(delta);
   if(delta > 10 || delta < 10)
   {
-    setRoboClaw(1, ADDRESS_SWERVE, delta, 0, 360, 40, 80);
+    setRoboClaw(1, ADDRESS_SWERVE, delta, 0, 360, 20, 80);
   }
   else
   {
@@ -235,25 +236,25 @@ void setAllSwerves()
   delta = int(goals[SWERVE_M2_INDEX] - getPosition(encoders[SWERVE_M2_INDEX]));
   if(delta > 10 || delta < 10)
   {
-    setRoboClaw(2, ADDRESS_SWERVE, delta, 0, 360, 40, 80);
+    setRoboClaw(2, ADDRESS_SWERVE, delta, 0, 360, 20, 80);
   }
   else
   {
     setRoboClaw(2, ADDRESS_SWERVE, 0); 
-  }*/
+  }
 }
 
 void loop()
 {
-  //setAllSwerves();
+  setAllSwerves();
   while(readLine(line))
   {
     Serial.println(line);
-    //parseLine(line);
-    //set(values[MOTOR_ID], values[SPEED]);
+    parseLine(line);
+    set(values[MOTOR_ID], values[SPEED]);
     setAllSwerves();
   }
   Serial.println(getPosition(encoders[2]));
-  //setAllSwerves();
+  setAllSwerves();
 }
 
