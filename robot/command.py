@@ -45,16 +45,18 @@ class motorManager():
 	def read_inputs(self) :
 		while(self.is_active) :
 			Serialize.run_robot(self.queue_in.get(), self)
-			sleep(0.001)
 
 
 	def update_port(self, port, value) :
 		self.queue_out.put(Serialize.Motor(port, value).dump())
 		if(self.arduino[port].active) :
 			print("Attempting to write: " + self.translate(port, value) + " to arduino.")
-			self.arduino[port].write(self.translate(port, value))
-			print("Wrote to arduino! Reading from arduino: ")
-			print(self.arduino[port].read())
+			try:
+				self.arduino[port].write(self.translate(port, value))
+				print("Wrote to arduino! Reading from arduino: ")
+				#print(self.arduino[port].read())
+			except Exception as e:
+				print("Error! " + e)
 		else :
 			print("Arduino not active!")
 

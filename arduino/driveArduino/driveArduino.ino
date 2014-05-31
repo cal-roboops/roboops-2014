@@ -246,6 +246,7 @@ void setAllSwerves()
 
 void loop()
 {
+  
   setAllSwerves();
   while(readLine(line))
   {
@@ -254,7 +255,7 @@ void loop()
     set(values[MOTOR_ID], values[SPEED]);
     setAllSwerves();
   }
-  Serial.println(getPosition(encoders[2]));
+  //Serial.println(getPosition(encoders[2]));
   setAllSwerves();
 }
 

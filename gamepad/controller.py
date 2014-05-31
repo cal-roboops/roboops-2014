@@ -141,6 +141,8 @@ class RobotController(Controller) :
 
 		self.clear_funcs()
 
+		print("arm mode!")
+
 		self.pre_values = {}
 		self.pre_values[ARM_0] = None
 		self.pre_values[ARM_1] = None
@@ -152,13 +154,66 @@ class RobotController(Controller) :
 		self.bind_axis(R_ANALOG_Y, self.generate_motor_func(AXIS, R_ANALOG_Y, ARM_2_SENSITIVITY, ARM_2_SENSITIVITYA, ARM_2))
 		self.bind_axis(TRIGGER, self.generate_motor_func(AXIS, TRIGGER, CLAW_SENSITIVITY, CLAW_SENSITIVITY, CLAW))
 
+	def set_car_mode(self):
+
+		self.clear_funcs()
+
+		print("car mode!")
+
+		self.pre_values = {}
+		self.pre_values[0] = None
+		self.pre_values[1] = None
+
+		self.pre_values['swerve'] = 45
+		self.pre_values['pan'] = 90
+
+		def drive_left(magnitude) :
+			if(self.pre_values[0] != magnitude) :
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
+				self.pre_values[0] = magnitude
+
+		def drive_right(magnitude) :
+			if(self.pre_values[1] != magnitude) :
+				self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
+				self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
+				self.pre_values[1] = magnitude
+
+		def swerve_shift(magnitude) :
+			self.pre_values['swerve'] += magnitude
+			self.pre_values = 0 if self.pre_values['swerve'] < 0 else (90 if self.pre_values['swerve'] > 90 else self.pre_values['swerve'])
+
+			self.set_all_swerves(self.pre_values['swerve'])
+
+		def deploy_camera() :
+			self.queue_out.put(Serialize.MotorHack(CAM_Y, 1)
+
+		def close_camera() :
+			self.queue_out.put(Serialize.MotorHack(CAM_Y, 0)
+
+		def pan_camera(magnitude) :
+			self.pre_values['pan'] += 10 if magnitude > 0 else -10
+			self.pre_values['pan'] = 0 if self.pre_values['swerve'] < 0 else (90 if self.pre_values['swerve'] > 90 else self.pre_values['swerve'])
+			self.queue_out.put(Serialize.MotorHack(CAM_X, self.pre_values['pan']))
+
+		self.bind_axis(L_ANALOG_Y, drive_left)
+		self.bind_axis(R_ANALOG_Y, drive_right)
+
+		self.bind_axis(TRIGGER, pan_camera)
+
+		self.bind_button_down(Y_BUTTON, deploy_camera)
+		self.bind_button_down(B_BUTTON, close_camera)
+
+		self.bind_button_down(LEFT_BUTTON, lambda : swerve_shift(-5))
+		self.bind_button_down(RIGHT_BUTTON, lambda : swerve_shift(5))
+
 	def set_tank_mode(self):
 
 		self.clear_funcs()
 
 		self.set_tank_orientation()
 
-		#print("tank mode!")
+		print("tank mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -189,7 +244,7 @@ class RobotController(Controller) :
 
 		self.set_spin_orientation()
 
-		#print("spin mode!")
+		print("spin mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -214,7 +269,7 @@ class RobotController(Controller) :
 
 		self.set_strafe_orientation()
 
-		#print("strafe mode!")
+		print("strafe mode!")
 
 		self.pre_values = {}
 		self.pre_values[0] = None
@@ -235,11 +290,11 @@ class RobotController(Controller) :
 
 	def set_spin_orientation(self):
 
-		self.set_all_swerves(45);
+		self.set_all_swerves(0);
 
 	def set_tank_orientation(self):
 
-		self.set_all_swerves(0);
+		self.set_all_swerves(45);
 
 	def set_strafe_orientation(self):
 

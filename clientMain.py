@@ -24,24 +24,28 @@ def main():
         r = motorManager(robot_side_in, robot_side_out, "", "")
         print("No arduino specified. Running testing state. It goes 'arm controller' 'drive controller'")
 
-    try:
-        robServer = Client(sys.argv[1], int(sys.argv[2]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
-    except:
-        print("No port specified. Please specify the fucking port.")
-        return
 
-    c = start_new_thread(r.read_inputs, ())
+    while True:
+        try:
+            robServer = Client(sys.argv[1], int(sys.argv[2]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
+        except:
+            print("Connection failed.")
+            print("Trying to reconnect...")
+            continue
 
-    robServer.start()
+        c = start_new_thread(r.read_inputs, ())
 
-    while(robServer.isOn):
-        pass
-        sleep(0.001)
+        robServer.start()
 
-    r.shut_off()
-    robServer.close()
+        while(robServer.isOn):
+            pass
+            sleep(0.0001)
 
-    print("Robot communications has exited.")
+        r.shut_off()
+        robServer.close()
+
+        print("Robot communications has exited.")
+        print("Trying to restart connections...")
 
 if __name__ == '__main__':
     main();
