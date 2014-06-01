@@ -46,9 +46,9 @@ class MotorHack(Command):
         self.speed = speed
 
     def run_robot(self, robot):
-        print("Command received! Attempting to write to arduino")
+        #print("Command received! Attempting to write to arduino")
         robot.update_port(self.number, self.speed)
-        print("Command sent to arduino!")
+        #print("Command sent to arduino!")
         #robot.queue_out.put(self.dump())
         #print("Shit sent back! Success!")
         
@@ -64,11 +64,11 @@ class Motor(Command):
         self.speed = speed
 
     def run_robot(self, robot):
-        print("Command received! Attempting to write to arduino")
+        #print("Command received! Attempting to write to arduino")
         robot.update_port(self.number, self.speed)
-        print("Command sent to arduino! Trying to send back shit")
+        #print("Command sent to arduino!")
         robot.queue_out.put(self.dump())
-        print("Shit sent back! Success!")
+        #print("Shit sent back! Success!")
         
     def run_gui(self, gui):
         if gui:
