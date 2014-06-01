@@ -287,9 +287,9 @@ class Gui():
         self.controller_readouts[AXIS][TRIGGER] = self.input_readout.add_label("Trigger", "0")
 
         #populate drive modes
-        self.radio_buttons.add_button("TANK MODE", TANK_DRIVE)
-        self.radio_buttons.add_button("STRAFE MODE", STRAFE_DRIVE)
-        self.radio_buttons.add_button("PIVOT SPIN", PIVOT_SPIN)
+        #self.radio_buttons.add_button("TANK MODE", TANK_DRIVE)
+        #self.radio_buttons.add_button("STRAFE MODE", STRAFE_DRIVE)
+        #self.radio_buttons.add_button("PIVOT SPIN", PIVOT_SPIN)
 
     def gui_loop(self) :
         self.root.mainloop()

@@ -28,6 +28,7 @@ def main():
     while True:
         try:
             robServer = Client(sys.argv[1], int(sys.argv[2]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
+            r.is_active = True
         except:
             print("Connection failed.")
             print("Trying to reconnect...")

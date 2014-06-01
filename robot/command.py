@@ -30,8 +30,8 @@ class motorManager():
 		self.arduino[FRONT_RIGHT_SWERVE] = driveArduino
 		self.arduino[BACK_RIGHT_SWERVE] = driveArduino
 
-		self.arduino[CAM_X] = driveArduino
-		self.arduino[CAM_Y] = driveArduino
+		self.arduino[CAM_X] = armArduino
+		self.arduino[CAM_Y] = armArduino
 
 		self.queue_in = queue_in
 		self.queue_out = queue_out
@@ -45,7 +45,7 @@ class motorManager():
 	def read_inputs(self) :
 		while(self.is_active) :
 			Serialize.run_robot(self.queue_in.get(), self)
-
+		print("read inputs closed")
 
 	def update_port(self, port, value) :
 		self.queue_out.put(Serialize.Motor(port, value).dump())

@@ -5,7 +5,7 @@ from constants.constants import *
 from serialize import Serialize
 
 MIN_DETECTION=.2 #to account for misc. numbers in resting state
-DELAY=.4 #to avoid sending excessive info
+DELAY=.5 #to avoid sending excessive info
 
 class Controller():
 
@@ -135,7 +135,7 @@ class RobotController(Controller) :
 			else:
 				self.update()
 
-			time.sleep(0.001)
+			#time.sleep(0.001)
 
 	def set_arm_mode(self):
 
@@ -161,40 +161,49 @@ class RobotController(Controller) :
 		print("car mode!")
 
 		self.pre_values = {}
-		self.pre_values[0] = None
-		self.pre_values[1] = None
+		self.pre_values['left'] = None
+		self.pre_values['right'] = None
 
-		self.pre_values['swerve'] = 45
-		self.pre_values['pan'] = 90
+		self.pre_values_dict = {}
+		self.pre_values_dict['swerve'] = 45
+		self.pre_values_dict['pan'] = 90
 
 		def drive_left(magnitude) :
-			if(self.pre_values[0] != magnitude) :
+			if(self.pre_values['left'] != magnitude) :
 				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, FRONT_LEFT_WHEEL, magnitude).dump())
 				self.queue_out.put(Serialize.RawMotor(AXIS, L_ANALOG_Y, LEFT_SENSITIVITY, BACK_LEFT_WHEEL, magnitude).dump())
-				self.pre_values[0] = magnitude
+				self.pre_values['left'] = magnitude
 
 		def drive_right(magnitude) :
-			if(self.pre_values[1] != magnitude) :
+			if(self.pre_values['right'] != magnitude) :
 				self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, FRONT_RIGHT_WHEEL, magnitude).dump())
 				self.queue_out.put(Serialize.RawMotor(AXIS, R_ANALOG_Y, RIGHT_SENSITIVITY, BACK_RIGHT_WHEEL, magnitude).dump())
-				self.pre_values[1] = magnitude
+				self.pre_values['right'] = magnitude
 
 		def swerve_shift(magnitude) :
-			self.pre_values['swerve'] += magnitude
-			self.pre_values = 0 if self.pre_values['swerve'] < 0 else (90 if self.pre_values['swerve'] > 90 else self.pre_values['swerve'])
+			self.pre_values_dict['swerve'] += magnitude
+			self.pre_values_dict['swerve'] = 0 if self.pre_values_dict['swerve'] < 0 else (90 if self.pre_values_dict['swerve'] > 90 else self.pre_values_dict['swerve'])
 
-			self.set_all_swerves(self.pre_values['swerve'])
+			self.set_all_swerves(self.pre_values_dict['swerve'])
 
 		def deploy_camera() :
-			self.queue_out.put(Serialize.MotorHack(CAM_Y, 1)
+			self.queue_out.put(Serialize.MotorHack(CAM_Y, 1).dump())
 
 		def close_camera() :
-			self.queue_out.put(Serialize.MotorHack(CAM_Y, 0)
+			self.queue_out.put(Serialize.MotorHack(CAM_Y, 0).dump())
 
 		def pan_camera(magnitude) :
-			self.pre_values['pan'] += 10 if magnitude > 0 else -10
-			self.pre_values['pan'] = 0 if self.pre_values['swerve'] < 0 else (90 if self.pre_values['swerve'] > 90 else self.pre_values['swerve'])
-			self.queue_out.put(Serialize.MotorHack(CAM_X, self.pre_values['pan']))
+			if magnitude > 0:
+				self.pre_values_dict['pan'] += 10
+				if self.pre_values_dict['pan'] > 170:
+					self.pre_values_dict['pan'] = 170
+			elif magnitude < 0:
+				self.pre_values_dict['pan'] -= 10
+				if self.pre_values_dict['pan'] < 10:
+					self.pre_values_dict['pan'] = 10
+			else:
+				return
+			self.queue_out.put(Serialize.MotorHack(CAM_X, self.pre_values_dict['pan']).dump())
 
 		self.bind_axis(L_ANALOG_Y, drive_left)
 		self.bind_axis(R_ANALOG_Y, drive_right)
@@ -202,7 +211,7 @@ class RobotController(Controller) :
 		self.bind_axis(TRIGGER, pan_camera)
 
 		self.bind_button_down(Y_BUTTON, deploy_camera)
-		self.bind_button_down(B_BUTTON, close_camera)
+		#self.bind_button_down(B_BUTTON, close_camera)
 
 		self.bind_button_down(LEFT_BUTTON, lambda : swerve_shift(-5))
 		self.bind_button_down(RIGHT_BUTTON, lambda : swerve_shift(5))
