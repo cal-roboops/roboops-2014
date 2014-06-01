@@ -55,6 +55,8 @@ char addresses[4];
 int values[2];
 int goals[4]; //goals for servos
 
+unsigned long flushTimer;
+
 const int MOTOR_ID = 0,
           SPEED = 1;
 
@@ -84,18 +86,17 @@ void setup()
   addresses[B_R_INDEX] = ADDRESS_B_R;
   addresses[F_L_INDEX] = ADDRESS_F_L;
   addresses[F_R_INDEX] = ADDRESS_F_R;
-  
+ 
   for(int i = 0; i < 4; i++)
   {
     goals[i] = 20 + int(float(45*3.1));
   }
-
-  swerves.begin(9600);
+  
   Serial.begin(9600);
   Serial.setTimeout(10);
+  flushTimer = millis();
 }
 
-/* Read a whole line in serial console, wait if the serial is not available */
 boolean readLine(char* dist)
 {
   return Serial.readBytesUntil('!', dist, 9);
@@ -246,7 +247,10 @@ void setAllSwerves()
 
 void loop()
 {
-  
+  if (millis()-flushTimer > 30000) {
+    while(Serial.available()) Serial.read();
+    flushTimer=millis();
+  }
   setAllSwerves();
   while(readLine(line))
   {

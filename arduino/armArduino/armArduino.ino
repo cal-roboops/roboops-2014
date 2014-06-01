@@ -76,7 +76,7 @@ char incomingByte;
 char line[10];
 char newline[10];
 
-
+unsigned long flushTimer;
 
 void setup()
 {
@@ -129,6 +129,8 @@ void setup()
   analogWrite(pwmPins[SHOULDER_VERTICAL_INDEX], 0);
   analogWrite(pwmPins[ELBOW_INDEX], 0);
   analogWrite(pwmPins[CLAW_INDEX], 0);
+  
+  flushTimer=millis();
 }
      
 
@@ -246,8 +248,7 @@ void closeCamera()
 
 void panCamera(int heading)
 {
-  pan.attach(PAN_SERVO);
-  panPosition = heading;
+  panPosition += heading;
   if(panPosition > 180)
     panPosition = 180;
   if(panPosition < 0)
@@ -255,8 +256,6 @@ void panCamera(int heading)
   //panPosition = (panPosition > 180 ? 180 : (panPosition < 0 ? 0 : panPosition));
   pan.write(panPosition);
   Serial.println(pan.read());
-  delay(30);
-  pan.detach();
 }
 
 void checkArm()
@@ -292,6 +291,10 @@ void checkArm()
 
 void loop()
 {
+  if (millis()-flushTimer > 30000) {
+    while(Serial.available()) Serial.read();
+    flushTimer=millis();
+  }
   
   while(readLine(line))
   {
