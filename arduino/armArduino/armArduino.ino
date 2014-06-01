@@ -77,6 +77,7 @@ char line[10];
 char newline[10];
 
 unsigned long flushTimer;
+unsigned long armTimer;
 
 void setup()
 {
@@ -131,6 +132,7 @@ void setup()
   analogWrite(pwmPins[CLAW_INDEX], 0);
   
   flushTimer=millis();
+  armTimer=millis();
 }
      
 
@@ -289,11 +291,25 @@ void checkArm()
   }
 }
 
+void killPower()
+{
+  arm(SHOULDER_HORIZONTAL, 0);
+  arm(SHOULDER_VERTICAL, 0);
+  arm(ELBOW, 0);
+  arm(CLAW, 0);  
+}
+
 void loop()
 {
-  if (millis()-flushTimer > 30000) {
+  if(millis()-flushTimer > 30000)
+  {
     while(Serial.available()) Serial.read();
     flushTimer=millis();
+  }
+  
+  if(millis()-armTimer > 5000)
+  {
+    killPower(); 
   }
   
   while(readLine(line))
@@ -303,7 +319,7 @@ void loop()
     parseLine(line);
    
     arm(values[MOTOR_ID], values[SPEED]);
-    //checkArm(); 
+    armTimer=millis();
   }
   
   //deployCamera();
