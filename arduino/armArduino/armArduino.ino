@@ -246,7 +246,8 @@ void closeCamera()
 
 void panCamera(int heading)
 {
-  panPosition += heading;
+  pan.attach(PAN_SERVO);
+  panPosition = heading;
   if(panPosition > 180)
     panPosition = 180;
   if(panPosition < 0)
@@ -254,6 +255,8 @@ void panCamera(int heading)
   //panPosition = (panPosition > 180 ? 180 : (panPosition < 0 ? 0 : panPosition));
   pan.write(panPosition);
   Serial.println(pan.read());
+  delay(30);
+  pan.detach();
 }
 
 void checkArm()

@@ -57,15 +57,15 @@ class motorManager():
 			try:
 				before = time()
 				self.arduino[port].write(self.translate(port, value))
-                                after = time()
-                                if after - before > 0.09:
-                                    self.emergency_stop()
-                                    #armArduino.close()
-                                    #driveArduino.close()
+                after = time()
+                if after - before > 0.09:
+                    self.emergency_stop()
+                    #armArduino.close()
+                    #driveArduino.close()
 
-                                    #armArduino.open()
-                                    #driveArduino.open()
-                                    print("Timed out!")
+                    #armArduino.open()
+                    #driveArduino.open()
+                    print("Timed out!")
 				print("Wrote to arduino!")
 				#print(self.arduino[port].read())
 			except Exception as e:
