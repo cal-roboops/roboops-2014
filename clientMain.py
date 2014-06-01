@@ -26,12 +26,14 @@ def main():
 
 
     while True:
+	r.is_active = True
         try:
+            #print("Trying to connect...")
             robServer = Client(sys.argv[1], int(sys.argv[2]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
             r.is_active = True
         except:
-            print("Connection failed.")
-            print("Trying to reconnect...")
+            #print("Connection failed.")
+            #print("Trying to reconnect...")
             continue
 
         c = start_new_thread(r.read_inputs, ())
@@ -42,11 +44,17 @@ def main():
             pass
             sleep(0.0001)
 
-        r.shut_off()
-        robServer.close()
+	try:
+            r.shut_off()
+            robServer.close()
+	except Exception as e:
+            print(e)
 
-        print("Robot communications has exited.")
-        print("Trying to restart connections...")
+	r.emergency_stop()
+
+        #print("Robot communications has exited.")
+        #print("Trying to restart connections...")
+        r = motorManager(robot_side_in, robot_side_out, sys.argv[3], sys.argv[4])
 
 if __name__ == '__main__':
     main();

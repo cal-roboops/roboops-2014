@@ -11,11 +11,11 @@ class Arduino:
 
 	def __init__(self, port):
 		try :
-			self.serial = serial.Serial(port, 9600)
+			self.serial = serial.Serial(port, 9600, timeout=0.1)
 			self.active = True
 		except Exception as e:
 			try:
-				self.serial = serial.Serial(int(port), 9600)
+				self.serial = serial.Serial(int(port), 9600, timeout=0.1)
 				self.active = True
 			except:
 				print("Arduino for port " + port + " failed")
@@ -32,6 +32,12 @@ class Arduino:
 
 	def read(self):
 		return self.serial.readline()
+
+        def close(self):
+                return self.serial.close()
+
+        def open(self):
+                return self.serial.open()
 
 if __name__ == "__main__":
 	interface = Arduino(portNames["ARM_CONTROLLER"])

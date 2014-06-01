@@ -120,6 +120,8 @@ class Client(Endpoint):
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+	#print("Trying to connect to " + host + " at " + str(port))
+
         self.s.connect((host, port))
         self.sc = self.s
         print('Client has been assigned socket name'+repr(self.s.getsockname()))

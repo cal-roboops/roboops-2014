@@ -147,14 +147,14 @@ void set(int motor, int value)
     // no longer have support for back swerves
     case BACK_LEFT_SWERVE:
     case BACK_RIGHT_SWERVE:
-      return;
+      ;
   }
   
   if(isEncoder)
   {
     goals[index] = (float(value)*3.1) + 20;
-    Serial.print("Set to ");
-    Serial.println(goals[index]);
+    //Serial.print("Set to ");
+    //Serial.println(goals[index]);
   }
   else
   {
@@ -223,7 +223,7 @@ void setAllSwerves()
   float delta;
 
   delta = int(goals[SWERVE_M1_INDEX] - getPosition(encoders[SWERVE_M1_INDEX]));
-  Serial.println(delta);
+  //Serial.println(delta);
   if(delta > 10 || delta < 10)
   {
     setRoboClaw(1, ADDRESS_SWERVE, delta, 0, 360, 20, 80);

@@ -3,7 +3,7 @@ from constants.constants import *
 from Queue import Queue
 from serialize import Serialize
 import arduino.arduino as arduino
-from time import sleep
+from time import sleep, time
 
 class motorManager():
 	def __init__(self, queue_in, queue_out, arm_port, drive_port) :
@@ -11,6 +11,9 @@ class motorManager():
 		self.translations = {}
 
 		self.queue = deque()
+
+                self.arm_port = arm_port
+                self.drive_port = drive_port
 
 		armArduino = arduino.Arduino(arm_port)
 		driveArduino = arduino.Arduino(drive_port)
@@ -52,11 +55,21 @@ class motorManager():
 		if(self.arduino[port].active) :
 			print("Attempting to write: " + self.translate(port, value) + " to arduino.")
 			try:
+				before = time()
 				self.arduino[port].write(self.translate(port, value))
-				print("Wrote to arduino! Reading from arduino: ")
+                                after = time()
+                                if after - before > 0.09:
+                                    self.emergency_stop()
+                                    #armArduino.close()
+                                    #driveArduino.close()
+
+                                    #armArduino.open()
+                                    #driveArduino.open()
+                                    print("Timed out!")
+				print("Wrote to arduino!")
 				#print(self.arduino[port].read())
 			except Exception as e:
-				print("Error! " + e)
+				print("Error! " + str(e))
 		else :
 			print("Arduino not active!")
 
@@ -64,7 +77,12 @@ class motorManager():
 		return str(port).zfill(2) + ((";1;" + str(-int(value)).zfill(3)) if value < 0 else (";0;" + str(int(value)).zfill(3))) + "!"
 
 	def shut_off(self) :
+		self.emergency_stop()
 		self.is_active = False
+                #armArduino.flushInput()
+                #armArduino.flushOutput()
+                #driveArduino.flushInput()
+                driveArduino.flushOutput()
 
 def main():
 	r = motorManager(Queue(), Queue())

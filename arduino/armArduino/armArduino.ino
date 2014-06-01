@@ -32,12 +32,12 @@
 #define CLAW_INDEX 2
 
 #define SHOULDER_HORIZONTAL_PWM 9
-#define SHOULDER_VERTICAL_PWM 10
+#define SHOULDER_VERTICAL_PWM 11
 #define ELBOW_PWM 3
 #define CLAW_PWM 6
 
 #define SHOULDER_HORIZONTAL_DIR 8
-#define SHOULDER_VERTICAL_DIR 11
+#define SHOULDER_VERTICAL_DIR 12
 #define ELBOW_DIR 2
 #define CLAW_DIR 7
 
@@ -47,7 +47,7 @@
 #define CLAW_PONT A2
 
 #define MAST_SERVO 4
-#define PAN_SERVO 5
+#define PAN_SERVO A0
 
 Servo mast, pan;
 int panPosition;
@@ -80,8 +80,19 @@ char newline[10];
 
 void setup()
 {
-  // initialize both serial ports:
-  Serial.flush();
+  pinMode(SHOULDER_HORIZONTAL_PWM, OUTPUT);
+  pinMode(SHOULDER_VERTICAL_PWM, OUTPUT);
+  pinMode(ELBOW_PWM, OUTPUT);
+  pinMode(CLAW_PWM, OUTPUT);
+
+  pinMode(SHOULDER_HORIZONTAL_DIR, OUTPUT);
+  pinMode(SHOULDER_VERTICAL_DIR, OUTPUT);
+  pinMode(ELBOW_DIR, OUTPUT);
+  pinMode(CLAW_DIR, OUTPUT);
+  
+  pinMode(MAST_SERVO, OUTPUT);
+  pinMode(PAN_SERVO, OUTPUT);
+  
   motorChar[2] = '\0';
   valuesChar[3] = '\0';
   line[9] = '\0';
@@ -102,40 +113,29 @@ void setup()
   dirLock[ELBOW_INDEX] = 0;
   dirLock[CLAW_INDEX] = 0;
   
-  analogWrite(pwmPins[SHOULDER_HORIZONTAL_INDEX], 0);
-  analogWrite(pwmPins[SHOULDER_VERTICAL_INDEX], 0);
-  analogWrite(pwmPins[ELBOW_INDEX], 0);
-  analogWrite(pwmPins[CLAW_INDEX], 0);
-  
   Serial.begin(9600);
   Serial.setTimeout(10);
   
-  mast.attach(MAST_SERVO);
-  pan.attach(PAN_SERVO);
+  //mast.attach(MAST_SERVO);
+  //pan.attach(PAN_SERVO);
   
   panPosition = 90;
   mastOpened = 0;
   
-  pan.write(panPosition);
+  //pan.write(panPosition);
+  //closeCamera();
   
-  pinMode(SHOULDER_HORIZONTAL_PWM, OUTPUT);
-  pinMode(SHOULDER_VERTICAL_PWM, OUTPUT);
-  pinMode(ELBOW_PWM, OUTPUT);
-  pinMode(CLAW_PWM, OUTPUT);
-  pinMode(SHOULDER_HORIZONTAL_DIR, OUTPUT);
-  pinMode(SHOULDER_VERTICAL_DIR, OUTPUT);
-  pinMode(ELBOW_DIR, OUTPUT);
-  pinMode(CLAW_DIR, OUTPUT);
-  
-  pinMode(MAST_SERVO, OUTPUT);
-  pinMode(PAN_SERVO, OUTPUT);
+  analogWrite(pwmPins[SHOULDER_HORIZONTAL_INDEX], 0);
+  analogWrite(pwmPins[SHOULDER_VERTICAL_INDEX], 0);
+  analogWrite(pwmPins[ELBOW_INDEX], 0);
+  analogWrite(pwmPins[CLAW_INDEX], 0);
 }
      
 
 /* Read a whole line in serial console, wait if the serial is not available */
-void readLine(char* dist)
+boolean readLine(char* dist)
 {
-  Serial.readBytesUntil('!', dist, 9);
+  return Serial.readBytesUntil('!', dist, 9);
 }
 
 /* Parses a line, writes to global variables */
@@ -187,61 +187,73 @@ void arm(int motor, int spd)
       if(spd == 0)
       {
         mastOpened = 0;
-        closeCamera();
       }
       else
       {
         mastOpened = 1;
         deployCamera();
       }
+    default:
+      return;
   }
   if (spd<0)
   {
     digitalWrite(dirPins[motor], 1);
-    if (dirLock[motor] && dirState[motor]==1)
-    {
-      spd = 0;
-    }
-    else
-    {
-      spd = -spd;
-      dirLock[motor] = 0;
-    }
     dirState[motor] = 1;
+    spd = -1*spd;
   }
   else
   {
     digitalWrite(dirPins[motor], 0);
-    if (dirLock[motor] && dirState[motor]==0)
-    {
-      spd = 0;
-    }
-    else
-    {
-      dirLock[motor] = 0;
-    }
     dirState[motor] = 0;
   }
-  long a = 255*long(spd)/1000;
+  //long a = ;//255*long(spd)/1000;
+  
+  Serial.println(pwmPins[motor]);
+  Serial.println(map(spd, 0, 1000, 0, 255));
 
-  analogWrite(pwmPins[motor], a);
+  analogWrite(pwmPins[motor], map(spd, 0, 1000, 0, 255));
+  
+  /*
+  if(pwmPins[motor] == 9)
+  {
+    Serial.println("Writing here!");
+    analogWrite(9, );
+  }*/
 }
 
 void deployCamera()
 {
-  mast.write(180);
+  mast.attach(MAST_SERVO);
+  for(int i = mast.read(); i > 1; i--)
+  {
+    mast.write(i);
+    delay(15);
+    Serial.println(mast.read());
+  }
+  mast.detach();
 }
 
 void closeCamera()
 {
-  mast.write(0);
+  /*
+  for(int i = mast.read(); i < 85; i++)
+  {
+    mast.write(i);
+    delay(15);
+  }*/
 }
 
 void panCamera(int heading)
 {
   panPosition += heading;
-  panPosition = (panPosition > 180 ? 180 : (panPosition < 0 ? 0 : panPosition));
+  if(panPosition > 180)
+    panPosition = 180;
+  if(panPosition < 0)
+    panPosition = 0;
+  //panPosition = (panPosition > 180 ? 180 : (panPosition < 0 ? 0 : panPosition));
   pan.write(panPosition);
+  Serial.println(pan.read());
 }
 
 void checkArm()
@@ -277,7 +289,24 @@ void checkArm()
 
 void loop()
 {
-  // read from port 1, send to port 0:
+  
+  while(readLine(line))
+  {
+    Serial.println(line);
+    //checkArm();
+    parseLine(line);
+   
+    arm(values[MOTOR_ID], values[SPEED]);
+    //checkArm(); 
+  }
+  
+  //deployCamera();
+  
+  //digitalWrite(8, HIGH);
+  //analogWrite(9, 100);
+  
+  
+  /*
   Serial.flush();
   
   delay(10);
@@ -292,7 +321,22 @@ void loop()
   delay(10);
   
   arm(values[MOTOR_ID],values[SPEED]);
-  checkArm();
+  checkArm();*/
+  
+  /*
+  panCamera(25);
+  delay(600);
+  panCamera(-25);
+  delay(600);*/
+  //deployCamera();
+  
+  //analogWrite(SHOULDER_VERTICAL_PWM, 0);
+  //analogWrite(SHOULDER_HORIZONTAL_PWM, 0);
+  /*
+  analogWrite(SHOULDER_HORIZONTAL_PWM, 400);
+  delay(500);
+  analogWrite(SHOULDER_HORIZONTAL_PWM, 0);
+  delay(100000);*/
 }
 
 
