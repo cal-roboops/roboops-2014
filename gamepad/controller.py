@@ -182,8 +182,10 @@ class RobotController(Controller) :
 
 		def swerve_shift(magnitude) :
 			self.pre_values_dict['swerve'] += magnitude
-			self.pre_values_dict['swerve'] = 0 if self.pre_values_dict['swerve'] < 0 else (90 if self.pre_values_dict['swerve'] > 90 else self.pre_values_dict['swerve'])
-
+			if self.pre_values_dict['swerve'] < 0:
+				self.pre_values_dict['swerve'] = 0
+			if self.pre_values_dict['swerve'] > 90:
+				self.pre_values_dict['swerve'] = 90
 			self.set_all_swerves(self.pre_values_dict['swerve'])
 
 		def deploy_camera() :
@@ -213,8 +215,8 @@ class RobotController(Controller) :
 		self.bind_button_down(Y_BUTTON, deploy_camera)
 		#self.bind_button_down(B_BUTTON, close_camera)
 
-		self.bind_button_down(LEFT_BUTTON, lambda : swerve_shift(-5))
-		self.bind_button_down(RIGHT_BUTTON, lambda : swerve_shift(5))
+		self.bind_button_down(LEFT_BUTTON, lambda : swerve_shift(-45))
+		self.bind_button_down(RIGHT_BUTTON, lambda : swerve_shift(45))
 
 	def set_tank_mode(self):
 
