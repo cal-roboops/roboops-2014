@@ -358,7 +358,7 @@ class RobotController(Controller) :
 
 	def generate_motor_func(self, type, input_id, sensitivity_id, motor_id) :
 		def func(magnitude) :
-			if magnitude != self.pre_values[motor_id]:
+			if magnitude != self.pre_values[motor_id] :
 				self.queue_out.put(Serialize.RawMotor(type, input_id, sensitivity_id, motor_id, magnitude).dump())
 				self.pre_values[motor_id] = magnitude
 		return func
