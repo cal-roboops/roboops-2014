@@ -50,6 +50,9 @@ class motorManager():
 			Serialize.run_robot(self.queue_in.get(), self)
 		print("read inputs closed")
 
+	def run_input(self, input_string):
+		Serialize.run_robot(input_string, self)
+
 	def update_port(self, port, value) :
 		self.queue_out.put(Serialize.Motor(port, value).dump())
 		if(self.arduino[port].active) :

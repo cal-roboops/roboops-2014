@@ -29,14 +29,14 @@ def main():
 	r.is_active = True
         try:
             #print("Trying to connect...")
-            robServer = Client(sys.argv[1], int(sys.argv[2]), lambda : robot_side_out.get(block=True, timeout=1), robot_side_in.put, r.shut_off)
+            robServer = Client(sys.argv[1], int(sys.argv[2]), lambda : robot_side_out.get(block=True, timeout=1), r.run_input, r.shut_off)
             r.is_active = True
         except:
             #print("Connection failed.")
             #print("Trying to reconnect...")
             continue
 
-        c = start_new_thread(r.read_inputs, ())
+        #c = start_new_thread(r.read_inputs, ())
 
         robServer.start()
 
