@@ -52,23 +52,23 @@
                                                             <div class="page-header sub-header clearfix">
                                     <h1><a href="../../Modules">Modules</a> <i class="glyphicon glyphicon-chevron-right"></i> <a href="../../Modules/Robot_Control">Robot Control</a> <i class="glyphicon glyphicon-chevron-right"></i> <a href="../../Modules/Robot_Control/MotorManager.html">MotorManager</a>                                                                            </h1>
                                     <span style="float: left; font-size: 10px; color: gray;">
-                                        Thursday, October 2, 2014                                    </span>
+                                        Friday, October 3, 2014                                    </span>
                                     <span style="float: right; font-size: 10px; color: gray;">
-                                        10:36 PM                                    </span>
+                                        1:08 AM                                    </span>
                                 </div>
                             
                             <h2>motorManager</h2>
-<p>Manages and sends commands to all arduinos.</p>
+<p>Manages and sends commands to all</p>
 <h3>init</h3>
 <p>Initializes everything.</p>
 <pre><code>@Queue queue_in
-    * Threadsafe queue for input commands
+    Threadsafe queue for input commands
 @Queue queue_out
-    * Threadsafe queue for output
+    Threadsafe queue for output
 @String arm_port
-    * Port for the arduino for the arm
+    Port for the arduino for the arm
 @String drive_port
-    * Port for the arduino contorlling the drive</code></pre>
+    Port for the arduino contorlling the drive</code></pre>
 <h3>emergency_stop</h3>
 <p>Shuts down all the motors</p>
 <h3>read_inputs</h3>
@@ -76,19 +76,19 @@
 <h3>run_input</h3>
 <p>Runs a single input from a string. For debugging.</p>
 <pre><code>@String input_string
-    * Serialized command to run</code></pre>
+    Serialized command to run</code></pre>
 <h3>update_port</h3>
 <p>Updates a port value. Should not be called externally.</p>
 <pre><code>@String port
-    * port to update
+    port to update
 @String value
-    * value to write to arduino for the port</code></pre>
+    value to write to arduino for the port</code></pre>
 <h3>translate</h3>
 <p>Turns a command into one the arduino understands. Returns it.</p>
 <pre><code>@String port
-    * port to update
+    port to update
 @String value
-    * value to write to arduino for the port</code></pre>
+    value to write to arduino for the port</code></pre>
 <h3>shut_off</h3>
 <p>Shuts off the robot. Cleans up values.</p>                                                    </article>
                     </div>
