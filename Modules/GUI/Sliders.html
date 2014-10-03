@@ -54,30 +54,40 @@
                                     <span style="float: left; font-size: 10px; color: gray;">
                                         Friday, October 3, 2014                                    </span>
                                     <span style="float: right; font-size: 10px; color: gray;">
-                                        1:08 AM                                    </span>
+                                        1:20 AM                                    </span>
                                 </div>
                             
                             <h2>Sliders</h2>
-<p>Adds radio buttons.</p>
+<p>Adds sliders for sensitivity</p>
 <pre><code>Parameters</code></pre>
 <h3>init</h3>
 <p>Initializes everything.</p>
 <pre><code>@LabelFrame parent
     The root/parent. Usually self.root
 @String Title
-    The title of the radio buttons</code></pre>
+    The title of the sliders</code></pre>
 <h3>set_grid</h3>
 <p>Grids the widget using tkinter grid arguments.</p>
 <pre><code>@Dict kwargs
     Useful hashes: row, column, sticky, rowspan, columnspan</code></pre>
-<h3>add_button</h3>
-<p>Adds a radio button</p>
+<h3>add_slider</h3>
+<p>Adds a slider. Returns it.</p>
 <pre><code>@String name
-    Name of the radio button
-@String value
-    Value of the radio button</code></pre>
+    Name of the slider
+@int min
+    Minimum value of the slider
+@int max
+    Maximum value of the slider</code></pre>
+<h3>add_slider_alt</h3>
+<p>Adds a slider without a name. Returns it.</p>
+<pre><code>@int min
+    Minimum value of the slider
+@int max
+    Maximum value of the slider</code></pre>
 <h3>get_value</h3>
-<p>Gets the current selected value.</p>                                                    </article>
+<p>Gets the current selected value of the slider.</p>
+<pre><code>@String name
+    name of the slider to get</code></pre>                                                    </article>
                     </div>
                 </div>
             </div>
