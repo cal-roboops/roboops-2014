@@ -1,6 +1,5 @@
 \documentclass[titlepage,twocolumn,10pt]{article}
 \usepackage[top=1in, bottom=1in, left=0.75in, right=0.75in, columnsep=20pt]{geometry}
-%\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
 \usepackage{amsmath,textcomp,amssymb,geometry,graphicx,enumerate,listings,graphicx,multirow}
 \newenvironment{qparts}{\begin{enumerate}[{(}a{)}]}{\end{enumerate}}
 
@@ -151,7 +150,7 @@
 
     \subsection{Manipulator}
     CAL-Rover's manipulator arm benefits from five degrees-of-freedom: three linearly-actuated hinges along the arm, a rotational base plate for yaw movement, and a linearly-actuated end effector to manipulate the claw. A five degree-of-freedom design increases the positional precision of the end effector and allows it to operate along various distances and directions from the rover. As a result, the arm's maneuverability and efficiency increases compared to the previous 3-DOF arm that could only gather rocks within a fixed distance from the rover. The arm is maneuvered primarily by a set of Firgelli linear actuators. The angled first boom is driven by a Figerlli FA-PO-150-12-2 actuator with a 50.8 mm (2 in) stroke and maximum load of 667 N (150 lbs). The second straight boom is supported by a Firgelli L16 series actuator with a 50 mm stroke and maximum load of 100N. Finally, both the wrist joint and end effector are driven by Firgelli L12 series actuators with 30 mm and 10 mm strokes respectively.
-     
+
     \begin{figure}[H]
         \centering
         \includegraphics*[width = 8cm]{images/manip.png}
@@ -159,9 +158,9 @@
     \end{figure}
 
     Linear actuators were chosen over right angled motors for two main reasons. First, with a 46N back drive force on the L16 models and 100N back drive force on the L12 models, we can maintain force without power usage. Second, the ease of use and built-in positional feedback allows greater precision control over the arm. Although linear actuators do individually have a reduced range of motion compared to traditional DC or servo motors, proper placement of actuators and selection of stroke lengths ensures that the overall range of motion of the arm is more maneuverable than previous years' designs. The high maximum loads were chosen to ensure that the actuators can drive the arm even throughout the full range of loading conditions.
-    
-    The only traditional DC motor on the arm is the Pololu 9.7:1 metal gearmotor in the arm's base housing used for rotation. A 90:1 worm drive gear ratio was chosen to both minimize the torque required from the motor and to allow for very precise yaw adjustments. A worm drive also protects the motor itself by ensuring that the unexpected forces on the arm cannot backdrive the motor shaft. This motor can output up to 10.8 N-m of torque, which is comfortably larger than the 0.13 N-m of torque required to turn the arm at the given gear ratio. 
-    
+
+    The only traditional DC motor on the arm is the Pololu 9.7:1 metal gearmotor in the arm's base housing used for rotation. A 90:1 worm drive gear ratio was chosen to both minimize the torque required from the motor and to allow for very precise yaw adjustments. A worm drive also protects the motor itself by ensuring that the unexpected forces on the arm cannot backdrive the motor shaft. This motor can output up to 10.8 N-m of torque, which is comfortably larger than the 0.13 N-m of torque required to turn the arm at the given gear ratio.
+
     The arm can sweep a full 360 degrees, and pick up samples within an arced region of 10.16 cm and 40.64 cm from the edge of the arm base. This large range of motion eliminates the need to reposition the rover to collect samples.
 
     \begin{figure}[H]
@@ -171,7 +170,7 @@
     \end{figure}
 
     The end joint ``wrist" is driven with a rack and pinion style drive. A gear rack mounted to the linear actuator gives the wrist 171° of rotational motion. The end effector is directly mounted to the wrist shaft with one fixed claw and the other free to rotational motion. Using a 10 mm stroke L12 actuator in conjunction with a rack and pinion, the end effector is allowed up to 114° of opening rotation. Sample collection is achieved through two curved shovels that interlock around samples up to 8 cm in width. Back drive force of the linear actuators ensures that the claw can remain clamped down around large samples without power.
-    
+
     \begin{figure}[H]
         \centering
         \includegraphics*[width = 8cm]{images/endeff.png}
@@ -248,7 +247,7 @@
         \end{tabular*}
         \caption{The build and test schedule for the rover}
     \end{table*}
-    
+
     \section{Public Engagement}
     Cal Rover already has a website hosted by the Open Computing Facility at Berkeley. Currently, it will be updated over the course of next semester. It can be accessed at http://aiaa.berkeley.edu. To additionally engage the public about this project, however, we will also continue the team facebook which will log progress made on the rover.
 
@@ -259,7 +258,7 @@
     Finally, for the livestream, we will be streaming a composite of the different rover camera views and sound from an onboard microphone.  We will be using either UStream or Google Hangouts on Air to stream the multimedia feeds to the masses.  These services will allow anyone with access to the internet to watch our rover's progress during the competition.
 
     \section{Team Skills and Facilities}
-    The Cal-Rover team is fortunate to be composed of and led by highly competent individuals. For the 2014-2015 competition, all leads have been team members during at least one previous Robo-Ops competition, providing them a full range of useful competition knowledge and experience.  The team members are listed in Table 2. 
+    The Cal-Rover team is fortunate to be composed of and led by highly competent individuals. For the 2014-2015 competition, all leads have been team members during at least one previous Robo-Ops competition, providing them a full range of useful competition knowledge and experience.  The team members are listed in Table 2.
 
     \begin{table*}[P]
         \begin{tabular*}{\textwidth}{l  l  l}
@@ -300,20 +299,20 @@
     \end{table*}
 
     The Cal-Rover team will have access to three major facilities to complete the construction of the rover. For machining the various parts needed, we have access to the Etcheverry student machine shop, which is equipped with milling machines, lathes, bandsaws, and drill presses, which many of our team members are or will be trained to use for the spring semester. For the electrical components, we have access to the SuperNode hackerspace in Berkeley, which is equipped with bench-top oscilloscopes, power supplies and soldering irons. Assembly of the rover is most likely to occur either in the Etcheverry machine shop or in room 120AB in Bechtel hall, which is the third facility available to us.
-   
+
     \begin{figure}[H]
         \centering
         \includegraphics*[width = 4cm]{images/etch.jpg}
         \includegraphics*[width = 4cm]{images/cory.jpg}
         \includegraphics*[width = 5cm]{images/becht.jpg}
-        \caption{Etcheverry machine shop, Cory Hall, and 120AB Bechtel, respectively} 
+        \caption{Etcheverry machine shop, Cory Hall, and 120AB Bechtel, respectively}
     \end{figure}
 
     \section{Lesson Learned}
     This report is UC Berkeley's third entry into the competition and with our experience, we have made some important changes to the design and design process. While in the past, we attempted to use all the space provided for the rover, this year we decided to look at spatial efficiency over total use. This has allowed us to significantly decrease the size of our chassis. Additionally, from our performance in the previous year's competition, we have designed our mechanical system with the electronics in mind; for example, the polycarbonate plates were added to the chassis to insulate the electronics from the chassis. Also at the previous year's competition, we learned that our rover's bulkiness was a large weakness when it came to performance. For example, the swerve drive's bulk impeded its ability to rotate and the rover's width created issues when turning the wheels through tank drive. This year we fixed those issues by completely redesigning the swerve drive and reducing the width of the chassis.
-  
+
     \section{Statement of Preparedness and Conclusion}
-    The Cal-Rover team believes that we are sufficiently prepared to enter and compete in the 2015 Robo-Ops competition. All of the critical systems have been fully designed, and technical drawings and bills of materials have been drafted for each subsystem. Additionally, we have competed in the competition before, and have proven ourselves to be able to build a rover within the time constraints. We have had time to critically look at our past years of design and have created a new design to improve upon the previous year's flaws. 
+    The Cal-Rover team believes that we are sufficiently prepared to enter and compete in the 2015 Robo-Ops competition. All of the critical systems have been fully designed, and technical drawings and bills of materials have been drafted for each subsystem. Additionally, we have competed in the competition before, and have proven ourselves to be able to build a rover within the time constraints. We have had time to critically look at our past years of design and have created a new design to improve upon the previous year's flaws.
 
     Additional factors that will have to be closely monitored are the build schedule and regular updating of the team website and Facebook page. To limit the chance that bottlenecks will stall rover development, the proposed timeline allows for some buffering in case some components fall behind schedule. That being said, however, team leads will ensure that manufacturing remains on track as much as possible.
 
