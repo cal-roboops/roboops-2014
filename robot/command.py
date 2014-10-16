@@ -12,8 +12,8 @@ class motorManager():
 
         self.queue = deque()
 
-                self.arm_port = arm_port
-                self.drive_port = drive_port
+        self.arm_port = arm_port
+        self.drive_port = drive_port
 
         armArduino = arduino.Arduino(arm_port)
         driveArduino = arduino.Arduino(drive_port)
