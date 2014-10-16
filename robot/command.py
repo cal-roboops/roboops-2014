@@ -85,7 +85,7 @@ class motorManager():
                 #armArduino.flushInput()
                 #armArduino.flushOutput()
                 #driveArduino.flushInput()
-                driveArduino.flushOutput()
+        driveArduino.flushOutput()
 
 def main():
     r = motorManager(Queue(), Queue())
