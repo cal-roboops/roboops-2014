@@ -1,5 +1,5 @@
 #####################
-#  		PORTS       #
+#          PORTS       #
 #####################
 FRONT_LEFT_WHEEL = 0
 FRONT_RIGHT_WHEEL = 1
@@ -23,7 +23,7 @@ CAM_Y = 12
 #You can even call each motor a string. Whatever's easier to send to arduinos.
 
 #####################
-#  	    MODES       #
+#          MODES       #
 #####################
 TANK_DRIVE = 0
 PIVOT_SPIN = 1
@@ -32,7 +32,7 @@ STRAFE_DRIVE = 2
 TIMEOUT = .600 #in s
 
 #####################
-#  	  Sliders       #
+#        Sliders       #
 #####################
 LEFT_SENSITIVITY = 0
 RIGHT_SENSITIVITY = 1
@@ -49,7 +49,7 @@ ARM_2_SENSITIVITYA = 11
 CLAW_SENSITIVITYA = 12
 
 #####################
-#  	 Controllers    #
+#       Controllers    #
 #####################
 BUTTON = 0
 AXIS = 1

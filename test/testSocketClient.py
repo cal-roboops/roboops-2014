@@ -13,8 +13,8 @@ def recieve():
         if not data: sys.exit(0)
         print('\nThe server said '+ data)
 def send():
-	while True:
-	    sendString = input()
-	    s.sendall(sendString)
+    while True:
+        sendString = input()
+        s.sendall(sendString)
 Thread(target=recieve).start()
 Thread(target=send).start()

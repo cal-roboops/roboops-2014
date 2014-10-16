@@ -5,11 +5,11 @@ from datetime import datetime, timedelta
 from time import sleep
 
 def defaultOut(message):
-	print(message)
+    print(message)
 
 def defaultIn():
-	message = input()
-	return message
+    message = input()
+    return message
 
 def defaultError():
     print("Socket disconnected!")
@@ -120,7 +120,7 @@ class Client(Endpoint):
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-	#print("Trying to connect to " + host + " at " + str(port))
+    #print("Trying to connect to " + host + " at " + str(port))
 
         self.s.connect((host, port))
         self.sc = self.s

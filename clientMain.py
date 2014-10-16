@@ -26,7 +26,7 @@ def main():
 
 
     while True:
-	r.is_active = True
+    r.is_active = True
         try:
             #print("Trying to connect...")
             robServer = Client(sys.argv[1], int(sys.argv[2]), lambda : robot_side_out.get(block=True, timeout=1), r.run_input, r.shut_off)
@@ -44,13 +44,13 @@ def main():
             pass
             sleep(0.0001)
 
-	try:
+    try:
             r.shut_off()
             robServer.close()
-	except Exception as e:
+    except Exception as e:
             print(e)
 
-	r.emergency_stop()
+    r.emergency_stop()
 
         #print("Robot communications has exited.")
         #print("Trying to restart connections...")

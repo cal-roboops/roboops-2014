@@ -11,5 +11,5 @@ image.addDrawingLayer(targetDistance.dl())
 
 i = 0
 while  i != 100:
-	image.show()
-	i +=1
+    image.show()
+    i +=1
