@@ -1,13 +1,8 @@
 // With JQuery
-$('#ex1').slider({
+$('#testSlider').slider({
 	formatter: function(value) {
-		return 'Current value: ' + value;
+        console.log('Current value: ' + value);
+        $('#testResult').text('Current value: ' + value);
 	}
 });
 
-// Without JQuery
-var slider = new Slider('#ex1', {
-	formatter: function(value) {
-		return 'Current value: ' + value;
-	}
-});
