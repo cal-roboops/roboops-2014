@@ -1,12 +1,12 @@
 // With JQuery
 $('#testSlider').slider({
-    tooltip: 'always'
-//	formatter: function(value) {
-//        console.log('Current value: ' + value);
-//        $('#testResult').text('Current value: ' + value);
-//	}
-
+    formatter: function(value) {
+       $('.min-slider-handle').text(value);
+       return value;
+    },
 
 });
 
-
+$(window).load(function(){
+  $('.min-slider-handle').text('15').css('text-align', 'center');
+});
